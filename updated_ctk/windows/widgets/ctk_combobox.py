@@ -2,7 +2,6 @@ import tkinter
 import sys
 import copy
 from typing import Union, Tuple, Callable, List, Optional, Any
-import pywinstyles
 from .core_widget_classes import DropdownMenu
 from .core_rendering import CTkCanvas
 from .theme import ThemeManager
