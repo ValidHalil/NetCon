@@ -61,6 +61,7 @@ class SerialTerminal(ctk.CTkToplevel):
         self.flag = 1
         self.old_line = "8425902375"
         self.special_string = ""
+        self.many_input = ""
         self.current_input = ""
         self.current_name = ""
         self.bar_height = 0
@@ -188,7 +189,7 @@ class SerialTerminal(ctk.CTkToplevel):
             self.input_entry.insert(0, "Waiting for connection...")
             self.help_btn.configure(image=self.help_eng_img)
         self.input_entry.configure(state="disabled")
-        self.bind('<Return>', lambda x: self.send_command())
+        self.input_entry.bind('<Return>', lambda x: self.send_command())
         self.input_entry.bind('<Down>', lambda prev: self.previous_command())
         self.input_entry.bind('<Up>', lambda prev: self.next_command())
         self.input_entry.bind('<Escape>', lambda clear: self.clear_entry())
@@ -432,7 +433,12 @@ class SerialTerminal(ctk.CTkToplevel):
             self.last_command_list.append(move_element)
 
     def send_command(self): #для элтексов вроде заебца
+        self.many_input = ""
         command = self.input_entry.get() + "\r"
+        if "\n" in command:
+            i_n = command.count('\n')
+            self.after(20, lambda: self.focus_set())
+            self.after(120*i_n, lambda: self.input_entry.focus_set())
         self.current_input = self.input_entry.get().lstrip().rstrip()
         self.nullstring = "\r"
         if self.serial_port and self.serial_port.is_open:
@@ -702,6 +708,21 @@ class SerialTerminal(ctk.CTkToplevel):
     def on_tab_pressed(self, event):
         return "break"
 
+    def check_previous_element_in_next(self,array):
+        result = []
+        previous_element = None
+        for current_element in array:
+            if previous_element is None:
+                result.append(False)  # For the first element
+            else:
+                if current_element == "":
+                    continue
+                is_contained = str(previous_element) in str(current_element)
+                if is_contained:
+                    return True
+            previous_element = current_element
+
+
     def read_from_port(self):
         def key_q(event):
             if event.keycode == 81:  # Клавиша с буквой C и с англ. буквой C
@@ -742,9 +763,26 @@ class SerialTerminal(ctk.CTkToplevel):
                         if self.flag == 1:
                             self.text_area.configure(state="normal")
                             line = line.replace("z1x1c", "")
-                            if line.replace("\n", "").rstrip().lstrip() not in self.old_line.replace("\n", "").rstrip().lstrip() and self.current_input in line and self.current_input != "" and "login" not in self.line.lower() and "%" not in line and "^" not in line  and "syntax error" not in self.line.lower():
-                                self.text_area.insert("end", f"\n {self.current_name + self.current_input}")
+
+                            line_index = line.find("#")
+                            line_without_name = line[line_index+1:].replace("\n","").rstrip().lstrip()
+                            drobl_line=line_without_name.split(" ")
+                            esr_input_trigger = self.check_previous_element_in_next(drobl_line)
+                            #rint(drobl_line, " | ", esr_input_trigger)
+
+                            if line.replace("\n", "").rstrip().lstrip() not in self.old_line.replace("\n", "").rstrip().lstrip() and self.current_input in line and self.current_input != "" and "login" not in self.line.lower() and "%" not in line and "^" not in line  and "syntax error" not in self.line.lower() or ("\n" in self.current_input and esr_input_trigger):
+                                if "\n" not in self.current_input:
+                                    self.text_area.insert("end", f"\n {self.current_name + self.current_input}")
+                                else:
+                                    if f"\n {self.current_name + self.current_input.replace("\n",f"\n {self.current_name}")}" != self.many_input:
+                                        self.many_input = f"\n {self.current_name + self.current_input.replace("\n",f"\n {self.current_name}")}"
+                                        self.text_area.insert("end", self.many_input)
+                                    if "%" in line or "^" in line or "syntax error" in self.line.lower():
+                                        self.text_area.insert("end", f"\n {line.replace("\n", "")}")
                                 self.old_line = line
+                                self.adjust_textbox_height()
+                                self.text_area.configure(height=self.new_height)
+                                self.update_idletasks()
                             else:
                                 if line.replace(" ", "") != "\n":
                                     self.text_area.insert("end", f"\n {line.replace("\n", "")}")  # думать + думать жоска
