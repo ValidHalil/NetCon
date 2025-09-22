@@ -1,5 +1,6 @@
 import updated_ctk as ctk
 import subprocess
+import os
 import keyboard
 import datetime
 from NetConWindows import CTkMessagebox
@@ -26,10 +27,23 @@ class Loading(ctk.CTkToplevel):
                 command = "tracert /d " + ip
             elif type_var == "/j":
                 command = "tracert /j " + ip
+            elif type_var == " win ":
+                return os.system(f'start cmd /k "tracert {ip}"'), close_window()
+            elif type_var == "/d win":
+                return os.system(f'start cmd /k "tracert -d {ip}"'), close_window()
+            elif type_var == "/j win":
+                return os.system(f'start cmd /k "tracert -j {ip}"'), close_window()
+
             elif type_var == "/t":
                 command = "ping /t /a " + ip
             elif type_var == "/a":
                 command = "ping -a " + ip
+            elif type_var == "win":
+                return os.system(f'start cmd /k "ping {ip}"'), close_window()
+            elif type_var == "/t win":
+                return os.system(f'start cmd /k "ping -t -a {ip}"'), close_window()
+            elif type_var == "/a win":
+                return os.system(f'start cmd /k "ping -a {ip}"'), close_window()
             else:
                 command = "ping " + ip
             textbox.configure(state='normal')
