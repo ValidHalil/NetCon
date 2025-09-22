@@ -7,19 +7,24 @@ ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
 
 class SearchWindow(ctk.CTkToplevel):
-    def __init__(self, master, textbox, opacity, language):
+    def __init__(self, master, textbox, opacity, language, theme):
         super().__init__(master)
         app_name = "NetCon.py"
         path_app = (os.path.abspath(app_name))
         path_img = path_app.replace(app_name, "")
 
+        self.theme = theme
         self.iconbitmap(path_img + "img/search_terminal.ico")
         self.up_image = ctk.CTkImage(dark_image=Image.open(path_img + "img/up.png"), size=(15, 15))
         self.down_image = ctk.CTkImage(dark_image=Image.open(path_img + "img/down.png"), size=(15, 15))
+        self.up_active_image = ctk.CTkImage(dark_image=Image.open(path_img + "img/up_active.png"), size=(15, 15))
+        self.down_active_image = ctk.CTkImage(dark_image=Image.open(path_img + "img/down_active.png"), size=(15, 15))
+        self.up_active_light_image = ctk.CTkImage(dark_image=Image.open(path_img + "img/up_active_light.png"), size=(15, 15))
+        self.down_active_light_image = ctk.CTkImage(dark_image=Image.open(path_img + "img/down_active_light.png"), size=(15, 15))
 
         self.language = language
         self.master_window = master
-        self.geometry("375x78")
+        self.geometry("380x78")
         if self.language == "Русский":
             self.title("Поиск в терминале")
         else:
@@ -136,15 +141,15 @@ class SearchWindow(ctk.CTkToplevel):
                 self.result_label.configure(text="Ожидание ввода...")
             else:
                 self.result_label.configure(text="Waiting for input...")
-            self.next_button.configure(state="disabled")
-            self.prev_button.configure(state="disabled")
+            self.next_button.configure(state="disabled", image=self.down_image)
+            self.prev_button.configure(state="disabled", image=self.up_image)
             return
         self.clear_highlights()
         self.results = []
         self.current_index = -1
         self.result_label.configure(text="")
-        self.next_button.configure(state="disabled")
-        self.prev_button.configure(state="disabled")
+        self.next_button.configure(state="disabled", image=self.down_image)
+        self.prev_button.configure(state="disabled", image=self.up_image)
         text = self.textbox.get("1.0", "end")
         if self.exact_match_toggled == True and self.regex_toggled == False:
             pattern = self.create_word_boundary_pattern(search_term)
@@ -175,7 +180,6 @@ class SearchWindow(ctk.CTkToplevel):
 
 
     def next_result(self):
-        """Highlights the next search result."""
         if self.results:
             #self.clear_highlights()
             self.current_index = (self.current_index + 1) % len(self.results)
@@ -186,7 +190,6 @@ class SearchWindow(ctk.CTkToplevel):
             self.update_result_label()
 
     def prev_result(self):
-        """Highlights the previous search result."""
         if self.results:
             #self.clear_highlights()
             self.current_index = (self.current_index - 1) % len(self.results)
@@ -197,7 +200,6 @@ class SearchWindow(ctk.CTkToplevel):
             self.update_result_label()
 
     def highlight_result(self):
-        """Highlights the current search result in the textbox."""
         if self.results:
             start_index, end_index = self.results[self.current_index]
             self.textbox.tag_add("highlight", start_index, end_index)
@@ -205,7 +207,6 @@ class SearchWindow(ctk.CTkToplevel):
             self.textbox.see(start_index)
 
     def highlight_all_result(self):
-        """Highlights the current search result in the textbox."""
         if self.results:
             for i in range(len(self.results)):
                 start_index, end_index = self.results[i]
@@ -213,7 +214,6 @@ class SearchWindow(ctk.CTkToplevel):
                 self.textbox.tag_config("highlight2", background="#1F538D")
 
     def clear_highlights(self):
-        """Removes all highlights from the textbox."""
         self.textbox.tag_remove("highlight", "1.0", "end")
         self.textbox.tag_remove("highlight2", "1.0", "end")
 
@@ -222,16 +222,19 @@ class SearchWindow(ctk.CTkToplevel):
         self.textbox.tag_remove("highlight2", start_index, end_index)
 
     def update_navigation_buttons(self):
-        """Updates the state of the Next/Previous buttons."""
         if self.results:
-            self.next_button.configure(state="normal")
-            self.prev_button.configure(state="normal")
+            print(self.theme)
+            if self.theme == "Dark" or self.theme == "Темная":
+                self.next_button.configure(state="normal", image=self.down_active_image)
+                self.prev_button.configure(state="normal", image=self.up_active_image)
+            elif self.theme == "Light" or self.theme == "Светлая":
+                self.next_button.configure(state="normal", image=self.down_active_light_image)
+                self.prev_button.configure(state="normal", image=self.up_active_light_image)
         else:
-            self.next_button.configure(state="disabled")
-            self.prev_button.configure(state="disabled")
+            self.next_button.configure(state="disabled", image=self.down_image)
+            self.prev_button.configure(state="disabled", image=self.up_image)
 
     def update_result_label(self):
-        """Updates the result label text."""
         if self.results:
             result_number = self.current_index + 1
             total_results = len(self.results)

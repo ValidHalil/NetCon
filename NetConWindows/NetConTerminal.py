@@ -244,7 +244,7 @@ class NetConTerminal(ctk.CTkToplevel):
 
     def open_search_window(self):
         if self.search_window is None or not self.search_window.winfo_exists():
-            self.search_window = NetConWindows.SearchWindow(self, self.text_area, self.opacity, self.language)
+            self.search_window = NetConWindows.SearchWindow(self, self.text_area, self.opacity, self.language, self.theme)
         self.search_window.focus()
 
     def adjust_textbox_height(self):
