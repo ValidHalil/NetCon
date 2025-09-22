@@ -85,6 +85,7 @@ class SerialTerminal(ctk.CTkToplevel):
         xlen = int((screen_width - window_width * self.scaling_factor) // 2)
         ylen = int((screen_height - window_height * self.scaling_factor) // 2)
         self.geometry(f"+{xlen}+{ylen}")
+        self.minsize(850, 250)
         self.serial_port = None
         self.search_window = None
         self.counter = 0
@@ -153,7 +154,7 @@ class SerialTerminal(ctk.CTkToplevel):
             self.baud_img = ctk.CTkLabel(self.settings_frame, image=speed_light_img, text="")
         self.baud_img.grid(row=0, column=2, padx=(25, 0), pady=(25, 5), sticky="w")
         self.baudrate_combobox = ctk.CTkComboBox(self.settings_frame, values=["9600", "19200", "38400", "57600", "115200"], font=ctk.CTkFont(family="Trebuchet MS", size=14, weight="bold"), width=130, state="readonly")
-        self.baudrate_combobox.grid(row=0, column=3, padx=(0,0), pady=(25,5), sticky="nsew")
+        self.baudrate_combobox.grid(row=0, column=3, padx=(0,10), pady=(25,5), sticky="nsew")
         self.baudrate_combobox.bind("<Return>", lambda con: self.connect_serial(flag=2))
         self.baudrate_combobox.bind("<Down>", lambda open_var: self.baudrate_combobox._clicked())
         self.baudrate_combobox.set("9600")

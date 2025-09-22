@@ -86,6 +86,7 @@ class NetConTerminal(ctk.CTkToplevel):
         xlen = int((screen_width - window_width * self.scaling_factor) // 2)
         ylen = int((screen_height - window_height * self.scaling_factor) // 2)
         self.geometry(f"+{xlen}+{ylen}")
+        self.minsize(850,250)
         self.serial_port = None
         self.counter = 0
         self.protocol("WM_DELETE_WINDOW", self._on_closing)
@@ -118,7 +119,7 @@ class NetConTerminal(ctk.CTkToplevel):
 
         self.settings_frame = ctk.CTkFrame(self, corner_radius=0)
         self.settings_frame.grid(row=0, column=0, sticky="nsew", columnspan = 2)
-        self.settings_frame.grid_columnconfigure((7), weight=1)
+        self.settings_frame.grid_columnconfigure((6), weight=1)
         self.settings_frame.grid_rowconfigure((0), weight=1)
 
         self.grid_columnconfigure(1, weight=1)
@@ -155,7 +156,7 @@ class NetConTerminal(ctk.CTkToplevel):
         self.password = ctk.CTkEntry(self.settings_frame, placeholder_text="...", show = "*", font=ctk.CTkFont(family="Trebuchet MS", size=14, weight="bold"), width=130)
         self.password.grid(row=0, column=4, padx=(0, 0), pady=(25, 5), sticky="nsew")
         self.clear_password = ctk.CTkButton(self.settings_frame, width=20, border_width=0, fg_color=("#e5e5e5", "#212121"), hover_color=("white", "#333333"), image=self.clear_img, text="", command=lambda: [self.password.delete(0, "end"), self.after(100, lambda: self.password.focus_set())])
-        self.clear_password.grid(row=0, column=5, padx=(5, 0), pady=(25, 5), sticky="e")
+        self.clear_password.grid(row=0, column=5, padx=(5, 10), pady=(25, 5), sticky="e")
         self.password.bind("<Return>", lambda con: [self.after(70, lambda: self.connect(flag=2))])
         self.password.bind("<Delete>", lambda delite_ep_tvoy_mat: [self.password.delete(0, "end"), self.after(100, lambda: self.password.focus_set())])
         self.password.bind("<FocusIn>", lambda focus_on: self.after(100, lambda: [self.bind('<Escape>', lambda escape_entry: self.right_click())]))
