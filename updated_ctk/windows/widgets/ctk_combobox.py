@@ -219,7 +219,6 @@ class CTkComboBox(CTkBaseClass):
         self._entry.focus_set()
         self._dropdown_menu.open(self.winfo_rootx() + self._apply_widget_scaling(self._current_width - self._desired_width),
                                  self.winfo_rooty() + self._apply_widget_scaling(self._current_height + 0))
-        pywinstyles.set_opacity(self._dropdown_menu, value=0.5, color="#000001")
 
 
 

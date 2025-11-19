@@ -290,7 +290,13 @@ class Help(ctk.CTkToplevel):
                                                "     записи в режиме выбора.\n"
                                                " 18. «⟵/⟶» - скролл влево/вправо в ре-\n"
                                                "     жиме выбора.\n"
-                                               " 19. «Ctrl+Del» - очистка поля вывода.\n"
+                                               " 19. При зажатом «CTRL» активируется ре-\n"
+                                               "     жим множественного выделения эле-\n"
+                                               "     ментов. В этом режиме, мышкой или\n"
+                                               "     на стрелки можно выделять элементы\n"
+                                               "     для последующего удаления копкой\n"
+                                               "     «Del». Режим активен только при за-\n"
+                                               "     жатом «CTRL»!\n"
                                         )
                 else:
                     self.textbox.insert("end", " \n ● «Address Database» tab:\n  \n"
@@ -335,7 +341,13 @@ class Help(ctk.CTkToplevel):
                                                "     n selection mode.\n"
                                                " 18. «⟵/⟶» - scroll left/right in selection\n"
                                                "      mode.\n"
-                                               " 19. «Ctrl+Del» - clear the output field.\n"
+                                               " 19. When «CTRL» is held down, the mode of\n"
+                                               "     multiple selection of elements is acti-\n"
+                                               "     vated. In this mode, you can use the\n"
+                                               "     mouse or arrow keys to select elements\n"
+                                               "     for subsequent deletion using the «Del»\n"
+                                               "     key. The mode is only active when «CTRL»\n"
+                                               "     is held down!\n"
                                         )
                 self.textbox.configure(state="disabled")
 

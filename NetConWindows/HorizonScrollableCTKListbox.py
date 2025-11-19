@@ -137,9 +137,12 @@ class CTkListbox(ctk.CTkScrollableFrame):
 
         if str(index).lower() == "end":
             index = -1
-
-        selected = list(self.buttons.keys())[index]
-        self.select(selected)
+        #Не точно!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ВОзможно убрать трай кетч потом
+        try:
+            selected = list(self.buttons.keys())[index]
+            self.select(selected)
+        except:
+            return
 
     def curselection(self):
         index = 0

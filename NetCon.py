@@ -1,5 +1,4 @@
 import threading
-import time
 import webbrowser
 import tkinter
 import pyautogui
@@ -10,6 +9,7 @@ import sqlite3
 import re
 import subprocess
 import pathlib
+import time
 import ctypes
 import sys
 import psutil
@@ -445,8 +445,10 @@ class App(ctk.CTk):
                 self.unbind("<F6>")
                 self.unbind("<F9>")
                 self.unbind("<F5>")  # тута неточна
-                self.unbind("<Control-Delete>")
+                #self.unbind("<Control-Delete>")
                 self.unbind("<Insert>")
+                self.unbind("<KeyPress-Control_L>")
+                self.unbind("<KeyRelease-Control_L>")
                 self.listbox.delete(0.0, 'end')
                 entry.configure(state="normal", border_color=("#979da2", "#565b5e"), button_color=("#979da2", "#565b5e"), command=lambda combo_var: combo_focus(entry, flag=1))
                 entry.bind("<Return>", lambda combobox_4_var: show_db(name_db, self.listbox))
@@ -489,9 +491,11 @@ class App(ctk.CTk):
             self.unbind("<Return>")
             self.unbind("<F8>")
             self.unbind("<Insert>")
+            self.unbind("<KeyPress-Control_L>")
+            self.unbind("<KeyRelease-Control_L>")
             self.unbind("<F5>")
             self.unbind("<F9>")
-            self.unbind("<Control-Delete>")
+            #self.unbind("<Control-Delete>")
             self.combobox_4.unbind("<Delete>")
             self.combobox_4.unbind("<Return>")
             self.textbox3.delete(0.0, "end")
@@ -508,9 +512,9 @@ class App(ctk.CTk):
                     for member in list2:
                         listbox.insert("END", member)
                     cursor.execute('SELECT COUNT(*) FROM net')
-                    total_users = cursor.fetchone()[0]
+                    self.total_users = cursor.fetchone()[0]
                     self.textbox3.configure(state="normal", border_color=("#979da2", "#565b5e"))
-                    self.textbox3.insert('end', total_users)
+                    self.textbox3.insert('end', self.total_users)
                     self.textbox3.configure(state="disabled")
                     db.commit()
                     cursor.close()
@@ -532,12 +536,14 @@ class App(ctk.CTk):
                         nav_tab4()
                         self.unbind("<F5>")
                         self.unbind("<Insert>")
-                        self.unbind("<Control-Delete>")
+                        self.unbind("<KeyPress-Control_L>")
+                        self.unbind("<KeyRelease-Control_L>")
+                        #self.unbind("<Control-Delete>")
                     if self.language == "Русский":
                         CTkMessagebox(opacity=self.opacity, message=f'Подключение к БД: «{self.name}»\nпрошло успешно!', title='Успех', icon='check')
                     else:
                         CTkMessagebox(opacity=self.opacity, message=f'Connection to DB: «{self.eng_name}»\nwas successful!', title='Success', icon='check')
-                    return self.after(100, lambda: self.focus_set()), self.after(120, lambda: [self.bind("<F6>", lambda del_var: clear_entry_baza(self.combobox_4)), self.bind("<Insert>", lambda insert_var: add_item(name_db, self.listbox)), self.bind("<F5>", lambda refresh_var: refresh_db(name_db, self.listbox)), self.bind("<Control-Delete>", lambda delete_text: [clear_text(self.listbox), clear_count()]), self.bind("<F9>", lambda open_help: help(self.tabview.get()))])
+                    return self.after(100, lambda: self.focus_set()), self.after(120, lambda: [self.bind("<F6>", lambda del_var: clear_entry_baza(self.combobox_4)), self.bind("<Insert>", lambda insert_var: add_item(name_db, self.listbox)), self.bind("<KeyPress-Control_L>", on_ctrl_press), self.bind("<KeyRelease-Control_L>", on_ctrl_release), self.bind("<F5>", lambda refresh_var: refresh_db(name_db, self.listbox)), self.bind("<F9>", lambda open_help: help(self.tabview.get()))])
             except:
                 self.combobox_4.configure(state="normal")
                 self.after(150, lambda: [self.combobox_4.focus_set(), self.combobox_4.bind("<Return>", lambda combobox_4_var: show_db(name_db, self.listbox)), self.combobox_4.bind("<Delete>", lambda del_var: clear_entry(self.combobox_4))])
@@ -564,10 +570,12 @@ class App(ctk.CTk):
             self.combobox_5.unbind("<Return>")
             self.combobox_4.unbind("<Down>")
             self.unbind("<Insert>")
+            self.unbind("<KeyPress-Control_L>")
+            self.unbind("<KeyRelease-Control_L>")
             self.unbind("<F5>")
             self.unbind("<F6>")
             self.unbind("<F9>")
-            self.unbind("<Control-Delete>")
+            #self.unbind("<Control-Delete>")
             # self.unbind("<F1>")
             # self.unbind("<F2>")
             # self.unbind("<F3>")
@@ -588,15 +596,17 @@ class App(ctk.CTk):
             self.after(50, lambda: self.clear_btn_baza.configure(state="normal", fg_color="#de710b", image=disconnect_img))
             self.after(150, lambda: self.clear_btn_search.configure(state="normal", fg_color="#de710b", image=clear_img))
             self.after(100, lambda: [self.combobox_4.bind("<Down>", lambda open_var: self.combobox_4._clicked()), self.bind("<F5>", lambda refresh_var: refresh_db(name_db, self.listbox)), self.bind("<F9>", lambda open_help: help(self.tabview.get()))])
-            self.after(101, lambda: [self.bind("<Insert>", lambda insert_var: add_item(name_db, self.listbox))])
+            self.after(101, lambda: [self.bind("<Insert>", lambda insert_var: add_item(name_db, self.listbox)), self.bind("<KeyPress-Control_L>", on_ctrl_press), self.bind("<KeyRelease-Control_L>", on_ctrl_release)])
             self.after(102, lambda: [self.combobox_5.bind("<Down>", lambda open_var: self.combobox_5._clicked()), self.combobox_5.bind("<Return>", lambda combobox_5_var: search_item(name_db, self.listbox, self.combobox_5.get()))])
-            self.after(103, lambda: [self.bind("<F6>", lambda del_var: clear_entry_baza(self.combobox_4)), self.bind("<Control-Delete>", lambda delete_text: [clear_text(self.listbox), clear_count()])])
+            self.after(103, lambda: [self.bind("<F6>", lambda del_var: clear_entry_baza(self.combobox_4))])
             # self.after(104, lambda: [self.bind("<F1>", lambda open_tab_var: nav_tab1()), self.bind("<F2>", lambda open_tab_var: nav_tab2()), self.bind("<F3>", lambda open_tab_var: nav_tab3()), self.bind("<F4>", lambda open_tab_var: nav_tab4())])
             if self.tabview.get() != "База адресов":
                 nav_tab4()
                 self.unbind("<F5>")
                 self.unbind("<Insert>")
-                self.unbind("<Control-Delete>")
+                self.unbind("<KeyPress-Control_L>")
+                self.unbind("<KeyRelease-Control_L>")
+                #self.unbind("<Control-Delete>")
             return self.after(180, lambda: [app.update(), app.update_idletasks()])  # пока спорно
 
         #Оптимизация удаления (для более быстрой работы с базой, заебала эта красота, слишком медленно было)
@@ -639,8 +649,8 @@ class App(ctk.CTk):
                     for member in list2:
                         listbox.insert("END", member)
                     cursor.execute('SELECT COUNT(*) FROM net')
-                    total_users = cursor.fetchone()[0]
-                    self.textbox3.insert('end', total_users)
+                    self.total_users = cursor.fetchone()[0]
+                    self.textbox3.insert('end', self.total_users)
                     self.textbox3.configure(state="disabled")
                     db.commit()
                     cursor.close()
@@ -654,7 +664,7 @@ class App(ctk.CTk):
                     CTkMessagebox(opacity=self.opacity, message='Требуется подключение к БД!', title='Ошибка', icon='cancel')
                 else:
                     CTkMessagebox(opacity=self.opacity, message='A database connection is required!', title='Error', icon='cancel')
-                return self.after(100, lambda: [self.combobox_4.configure(state="readonly", border_color=("#979da2", "#565b5e"), button_color=("#979da2", "#565b5e")), self.combobox_4.bind("<Down>", lambda open_var: self.combobox_4._clicked())]), self.bind("<F5>", lambda refresh_var: refresh_db(name_db, self.listbox)), self.after(100, lambda: [self.bind("<Insert>", lambda insert_var: add_item(name_db, self.listbox))]), self.after(100, lambda: [self.combobox_5.bind("<Down>", lambda open_var: self.combobox_5._clicked()), self.combobox_5.bind("<Return>", lambda combobox_5_var: search_item(name_db, self.listbox, self.combobox_5.get()))]), self.after(100, lambda: [self.bind("<F6>", lambda del_var: clear_entry_baza(self.combobox_4))])
+                return self.after(100, lambda: [self.combobox_4.configure(state="readonly", border_color=("#979da2", "#565b5e"), button_color=("#979da2", "#565b5e")), self.combobox_4.bind("<Down>", lambda open_var: self.combobox_4._clicked())]), self.bind("<F5>", lambda refresh_var: refresh_db(name_db, self.listbox)), self.after(100, lambda: [self.bind("<Insert>", lambda insert_var: add_item(name_db, self.listbox)), self.bind("<KeyPress-Control_L>", on_ctrl_press), self.bind("<KeyRelease-Control_L>", on_ctrl_release)]), self.after(100, lambda: [self.combobox_5.bind("<Down>", lambda open_var: self.combobox_5._clicked()), self.combobox_5.bind("<Return>", lambda combobox_5_var: search_item(name_db, self.listbox, self.combobox_5.get()))]), self.after(100, lambda: [self.bind("<F6>", lambda del_var: clear_entry_baza(self.combobox_4))])
 
         # Обновление без хуйни (почти) для поиска
         def refresh_db_after_search(name, listbox):
@@ -681,8 +691,8 @@ class App(ctk.CTk):
                     for member in list2:
                         listbox.insert("END", member)
                     cursor.execute('SELECT COUNT(*) FROM net')
-                    total_users = cursor.fetchone()[0]
-                    self.textbox3.insert('end', total_users)
+                    self.total_users = cursor.fetchone()[0]
+                    self.textbox3.insert('end', self.total_users)
                     self.textbox3.configure(state="disabled")
                     db.commit()
                     cursor.close()
@@ -727,8 +737,8 @@ class App(ctk.CTk):
                     for member in list2:
                         listbox.insert("END", member)
                     cursor.execute('SELECT COUNT(*) FROM net')
-                    total_users = cursor.fetchone()[0]
-                    self.textbox3.insert('end', total_users)
+                    self.total_users = cursor.fetchone()[0]
+                    self.textbox3.insert('end', self.total_users)
                     self.textbox3.configure(state="disabled")
                     db.commit()
                     cursor.close()
@@ -781,8 +791,8 @@ class App(ctk.CTk):
                     for member in list2:
                         listbox.insert("END", member)
                     cursor.execute('SELECT COUNT(*) FROM net')
-                    total_users = cursor.fetchone()[0]
-                    self.textbox3.insert('end', total_users)
+                    self.total_users = cursor.fetchone()[0]
+                    self.textbox3.insert('end', self.total_users)
                     self.textbox3.configure(state="disabled")
                     db.commit()
                     cursor.close()
@@ -827,6 +837,7 @@ class App(ctk.CTk):
                     return CTkMessagebox(opacity = self.opacity, message='Выберите элемент для удаления!', title='Ошибка', icon='cancel')
                 else:
                     return CTkMessagebox(opacity=self.opacity, message='Select the item to delete!', title='Error', icon='cancel')
+
             if self.language == "Русский":
                 msg = CTkMessagebox(opacity = self.opacity, message='Вы уверены?', title='Внимание', icon='warning', option_1="Отмена", option_2="Да")
             else:
@@ -836,7 +847,7 @@ class App(ctk.CTk):
             response = msg.get()
             # msg.option_text_1 = "Да"
             if response == "Отмена" or response == "Cancel":
-                return
+                return simulate_ctrl_release()
             if response == "Да" or response == "Yes":
                 try:
                     with sqlite3.connect("db/" + self.name + ".db") as db:
@@ -856,8 +867,8 @@ class App(ctk.CTk):
                         for member in list2:
                             listbox.insert("END", member)
                         cursor2.execute('SELECT COUNT(*) FROM net')
-                        total_users = cursor2.fetchone()[0]
-                        self.textbox3.insert('end', total_users)
+                        self.total_users = cursor2.fetchone()[0]
+                        self.textbox3.insert('end', self.total_users)
                         self.textbox3.configure(state="disabled")
                         cursor2.close()
                         back_states_and_binds_after_refresh()
@@ -872,6 +883,79 @@ class App(ctk.CTk):
                         return CTkMessagebox(opacity = self.opacity, message='База данных пуста!', title='Ошибка', icon='cancel')
                     else:
                         return CTkMessagebox(opacity=self.opacity, message='The database is empty!', title='Error', icon='cancel')
+
+        # Массовое удаление выделения на кантроул (геноцид.)
+        def delete_items(name, listbox):
+            check_db_eng_name(name)
+            self.unbind("<Double-Button-1>")
+            self.previous_selected = None
+            members = self.listbox.curselection()
+            count = len(members)
+            if self.language == "Русский":
+                if count == 0:
+                    simulate_ctrl_release()
+                    return CTkMessagebox(opacity=self.opacity, message='Выберите элементы для удаления!', title='Ошибка', icon='cancel', multiselection_on=True)
+            else:
+                if count == 0:
+                    simulate_ctrl_release()
+                    return CTkMessagebox(opacity=self.opacity, message='Select any items to delete!', title='Error', icon='cancel', multiselection_on=True)
+            if self.language == "Русский":
+                msg = CTkMessagebox(opacity=self.opacity, message=f'Вы уверены что хотите\nудалить {count} выбранных элементов?', title='Внимание', icon='warning', option_1="Отмена", option_2="Да", multiselection_on=True)
+            else:
+                msg = CTkMessagebox(opacity=self.opacity, message=f'Are you sure you want\nto delete {count} selected items?', title='Attention', icon='warning', option_1="Cancel", option_2="Yes", multiselection_on=True)
+            msg.focus_set()
+            msg.button_1.configure(fg_color="#de710b", hover_color="#ab590c")
+            response = msg.get()
+            if response == "Отмена" or response == "Cancel":
+                return simulate_ctrl_release()
+            if response == "Да" or response == "Yes":
+                simulate_ctrl_release()
+                sql_strings = []
+                for index in members:
+                    list_member = self.listbox.get(index)
+                    s = " "
+                    s2 = (s.join(list_member))
+                    head, sep, tail = s2.partition(s)
+                    sql_string = ('"' + head + '"')
+                    sql_strings.append(sql_string)
+                try:
+                    with sqlite3.connect("db/" + self.name + ".db") as db:
+                        lock_states_and_binds_during_refresh()
+                        for sql_string in sql_strings:
+                            cursor = db.cursor()
+                            query = 'DELETE FROM net WHERE ip_address =' + sql_string
+                            cursor.execute(query)
+                            db.commit()
+                            cursor.close()
+                        cursor2 = db.cursor()
+                        cursor2.execute("""SELECT ip_address, name FROM net ORDER BY ip_address""")
+                        self.textbox3.configure(state="normal")
+                        self.textbox3.delete(0.0, "end")
+                        #listbox.delete(0.0, "end")
+                        delete_items_in_batches(self.listbox, list(range(self.listbox.size())), self.listbox.size())
+                        list2 = cursor2.fetchall()
+                        for member in list2:
+                            listbox.insert("END", member)
+                        cursor2.execute('SELECT COUNT(*) FROM net')
+                        self.total_users = cursor2.fetchone()[0]
+                        self.textbox3.insert('end', self.total_users)
+                        self.textbox3.configure(state="disabled")
+                        cursor2.close()
+                        back_states_and_binds_after_refresh()
+                        if self.language == "Русский":
+                            return CTkMessagebox(opacity = self.opacity, message='Данные успешно удалены!', title='Успех', icon='check', multiselection_on=True)
+                        else:
+                            return CTkMessagebox(opacity=self.opacity, message='The data has been successfully deleted!', title='Success', icon='check', multiselection_on=True)
+                except:
+                    self.previous_selected = None
+                    back_states_and_binds_after_refresh()
+                    if self.language == "Русский":
+                        return CTkMessagebox(opacity = self.opacity, message='База данных пуста!', title='Ошибка', icon='cancel', multiselection_on=True)
+                    else:
+                        return CTkMessagebox(opacity=self.opacity, message='The database is empty!', title='Error', icon='cancel', multiselection_on=True)
+
+
+
 
         # Функция добавления нового значения в БД (проверка на повторный ввод IP и фокус на дубликате в базе если есть,
         # обновление базы и фокус на только что добавленном элементе) (ну и брээээд)
@@ -943,8 +1027,8 @@ class App(ctk.CTk):
                             except:
                                 listbox.activate(0)
                     cursor2.execute('SELECT COUNT(*) FROM net')
-                    total_users = cursor2.fetchone()[0]
-                    self.textbox3.insert('end', total_users)
+                    self.total_users = cursor2.fetchone()[0]
+                    self.textbox3.insert('end', self.total_users)
                     self.textbox3.configure(state="disabled")
                     db.commit()
                     cursor.close()
@@ -965,6 +1049,8 @@ class App(ctk.CTk):
         # из него следует исключение, что при попытке изменить ТОЛЬКО ИМЯ (айпи вводится старый) проверка на дубликат выполняться не будет! => изменится только имя!)
         # ты че ваще долбоеб???
         def update_item(name, listbox):
+            if self.is_ctrl_pressed:
+                return
             check_db_eng_name(name)
             self.unbind("<Double-Button-1>")
             self.previous_selected = None
@@ -1028,8 +1114,8 @@ class App(ctk.CTk):
                                 except:
                                     listbox.select(0)
                         cursor2.execute('SELECT COUNT(*) FROM net')
-                        total_users = cursor2.fetchone()[0]
-                        self.textbox3.insert('end', total_users)
+                        self.total_users = cursor2.fetchone()[0]
+                        self.textbox3.insert('end', self.total_users)
                         self.textbox3.configure(state="disabled")
                         db.commit()
                         cursor2.close()
@@ -1094,8 +1180,8 @@ class App(ctk.CTk):
                                 except:
                                     listbox.select(0)
                         cursor2.execute('SELECT COUNT(*) FROM net')
-                        total_users = cursor2.fetchone()[0]
-                        self.textbox3.insert('end', total_users)
+                        self.total_users = cursor2.fetchone()[0]
+                        self.textbox3.insert('end', self.total_users)
                         self.textbox3.configure(state="disabled")
                         db.commit()
                         cursor2.close()
@@ -1204,44 +1290,112 @@ class App(ctk.CTk):
 
         # Функкция перемещения вниз пол листбоксу при нажатии на стрелку вниз (я еблан я еблан да я долбоеб тупой)
         def next_item_listbox():
-            if self.listbox.curselection() == self.listbox.size() - 1:
-                self.listbox.activate(0)
-                self.listbox._parent_canvas.yview("moveto", 0)
-            else:
+            if self.is_ctrl_pressed:
+                #self.unbind("<Delete>")
+                indexes = self.listbox.curselection()
+                next_index = indexes[len(indexes)-1] + 1
+                if next_index == self.listbox.size():
+                    self.listbox._parent_canvas.yview("scroll", int(100 / 3) * (indexes[len(indexes) - 1] - indexes[0]), "units")
+                    self.last_arrow = "Down"
+                    return
                 if self.scaling_optionemenu.get() == "100%":
-                    self.listbox.activate(self.listbox.curselection() + 1)
-                    self.listbox._parent_canvas.yview("scroll", int(100 / 3), "units")
+                    self.listbox.activate(next_index)
+                    if self.last_arrow == "Up":
+                        self.listbox._parent_canvas.yview("scroll", int(100 / 3) * (indexes[len(indexes) - 1] - indexes[0]), "units")
+                    else:
+                        self.listbox._parent_canvas.yview("scroll", int(100 / 3), "units")
                 elif self.scaling_optionemenu.get() == "95%":
-                    self.listbox.activate(self.listbox.curselection() + 1)
-                    self.listbox._parent_canvas.yview("scroll", int(100 / 3.1), "units")
+                    self.listbox.activate(next_index)
+                    if self.last_arrow == "Up":
+                        self.listbox._parent_canvas.yview("scroll", int(100 / 3.1) * (indexes[len(indexes) - 1] - indexes[0]), "units")
+                    else:
+                        self.listbox._parent_canvas.yview("scroll", int(100 / 3.1), "units")
                 elif self.scaling_optionemenu.get() == "105%":
-                    self.listbox.activate(self.listbox.curselection() + 1)
-                    self.listbox._parent_canvas.yview("scroll", int(100 / 2.9), "units")
+                    self.listbox.activate(next_index)
+                    if self.last_arrow == "Up":
+                        self.listbox._parent_canvas.yview("scroll", int(100 / 2.9) * (indexes[len(indexes) - 1] - indexes[0]), "units")
+                    else:
+                        self.listbox._parent_canvas.yview("scroll", int(100 / 2.9), "units")
+                self.last_arrow = "Down"
+            else:
+                if self.listbox.curselection() == self.listbox.size() - 1:
+                    self.listbox.activate(0)
+                    self.listbox._parent_canvas.yview("moveto", 0)
+                else:
+                    if self.scaling_optionemenu.get() == "100%":
+                        self.listbox.activate(self.listbox.curselection() + 1)
+                        self.listbox._parent_canvas.yview("scroll", int(100 / 3), "units")
+                    elif self.scaling_optionemenu.get() == "95%":
+                        self.listbox.activate(self.listbox.curselection() + 1)
+                        self.listbox._parent_canvas.yview("scroll", int(100 / 3.1), "units")
+                    elif self.scaling_optionemenu.get() == "105%":
+                        self.listbox.activate(self.listbox.curselection() + 1)
+                        self.listbox._parent_canvas.yview("scroll", int(100 / 2.9), "units")
 
         # Функкция перемещения вверх пол листбоксу при нажатии на стрелку вниз
         def prev_item_listbox():
-            if self.listbox.curselection() == 0:
-                self.listbox.activate(self.listbox.size() - 1)
-                self.listbox._parent_canvas.yview("moveto", self.listbox.size() - 1)
-            else:
+            if self.is_ctrl_pressed:
+                #self.unbind("<Delete>")
+                indexes = self.listbox.curselection()
+                prev_index = indexes[0] - 1
+                if prev_index == -1:
+                    if self.listbox.size() > 8:
+                        self.listbox._parent_canvas.yview("scroll", -int(100 / 3.1) * (indexes[len(indexes) - 1] - indexes[0]), "units")
+                    elif self.listbox.size() > 7 and self.scaling_optionemenu.get() != "95%":
+                        self.listbox._parent_canvas.yview("scroll", -int(100 / 3) * (indexes[len(indexes) - 1] - indexes[0]), "units")
+                    self.last_arrow = "Up"
+                    return
                 if self.scaling_optionemenu.get() == "100%":
                     if self.listbox.size() > 7:
-                        self.listbox.activate(self.listbox.curselection() - 1)
-                        self.listbox._parent_canvas.yview("scroll", -int(100 / 3), "units")
+                        self.listbox.activate(prev_index)
+                        if self.last_arrow == "Down":
+                            self.listbox._parent_canvas.yview("scroll", -int(100 / 3) * (indexes[len(indexes) - 1] - indexes[0]), "units")
+                        else:
+                            self.listbox._parent_canvas.yview("scroll", -int(100 / 3), "units")
                     else:
-                        self.listbox.activate(self.listbox.curselection() - 1)
+                        self.listbox.activate(prev_index)
                 elif self.scaling_optionemenu.get() == "95%":
                     if self.listbox.size() > 8:
-                        self.listbox.activate(self.listbox.curselection() - 1)
-                        self.listbox._parent_canvas.yview("scroll", -int(100 / 3.1), "units")
+                        self.listbox.activate(prev_index)
+                        if self.last_arrow == "Down":
+                            self.listbox._parent_canvas.yview("scroll", -int(100 / 3.1) * (indexes[len(indexes) - 1] - indexes[0]), "units")
+                        else:
+                            self.listbox._parent_canvas.yview("scroll", -int(100 / 3.1), "units")
                     else:
-                        self.listbox.activate(self.listbox.curselection() - 1)
+                        self.listbox.activate(prev_index)
                 elif self.scaling_optionemenu.get() == "105%":
                     if self.listbox.size() > 7:
-                        self.listbox.activate(self.listbox.curselection() - 1)
-                        self.listbox._parent_canvas.yview("scroll", -int(100 / 2.9), "units")
+                        self.listbox.activate(prev_index)
+                        if self.last_arrow == "Down":
+                            self.listbox._parent_canvas.yview("scroll", -int(100 / 2.9) * (indexes[len(indexes) - 1] - indexes[0]), "units")
+                        else:
+                            self.listbox._parent_canvas.yview("scroll", -int(100 / 2.9), "units")
                     else:
-                        self.listbox.activate(self.listbox.curselection() - 1)
+                        self.listbox.activate(prev_index)
+                self.last_arrow = "Up"
+            else:
+                if self.listbox.curselection() == 0:
+                    self.listbox.activate(self.listbox.size() - 1)
+                    self.listbox._parent_canvas.yview("moveto", self.listbox.size() - 1)
+                else:
+                    if self.scaling_optionemenu.get() == "100%":
+                        if self.listbox.size() > 7:
+                            self.listbox.activate(self.listbox.curselection() - 1)
+                            self.listbox._parent_canvas.yview("scroll", -int(100 / 3), "units")
+                        else:
+                            self.listbox.activate(self.listbox.curselection() - 1)
+                    elif self.scaling_optionemenu.get() == "95%":
+                        if self.listbox.size() > 8:
+                            self.listbox.activate(self.listbox.curselection() - 1)
+                            self.listbox._parent_canvas.yview("scroll", -int(100 / 3.1), "units")
+                        else:
+                            self.listbox.activate(self.listbox.curselection() - 1)
+                    elif self.scaling_optionemenu.get() == "105%":
+                        if self.listbox.size() > 7:
+                            self.listbox.activate(self.listbox.curselection() - 1)
+                            self.listbox._parent_canvas.yview("scroll", -int(100 / 2.9), "units")
+                        else:
+                            self.listbox.activate(self.listbox.curselection() - 1)
 
         # Функкция скролла листбокса влево на стрелку
         def left_scroll_listbox():
@@ -1253,18 +1407,112 @@ class App(ctk.CTk):
 
         # Бинды для выбранного элемента listbox (Ваще делать нехуй??? там же кнопки есть, ну яНЕтупой да я да хочу жать клавиши)
         def open_con_listbox():
-            self.focus_set()
-            self.bind("<Double-Button-1>", lambda x1: selected_item())
-            self.bind("<Button-3>", lambda x2: update_item(name_db, self.listbox))
-            self.bind("<Delete>", lambda x3: delete_item(name_db, self.listbox))
-            self.bind("<BackSpace>", lambda x4: delete_item(name_db, self.listbox))
+            if self.is_ctrl_pressed:
+                self.bind("<Delete>", lambda x3: delete_items(name_db, self.listbox))
+                self.bind("<BackSpace>", lambda x4: delete_items(name_db, self.listbox))
+            else:
+                self.bind("<Delete>", lambda x7: delete_item(name_db, self.listbox))
+                self.bind("<BackSpace>", lambda x6: delete_item(name_db, self.listbox))
+                self.bind("<Return>", lambda x1: selected_item())
+                self.bind("<Double-Button-1>", lambda x1: selected_item())
+                self.bind("<Button-3>", lambda x2: update_item(name_db, self.listbox))
+                self.bind("<F8>", lambda x5: update_item(name_db, self.listbox))
             self.bind("<Down>", lambda next: next_item_listbox())
             self.bind("<Up>", lambda prev: prev_item_listbox())
             self.bind("<Left>", lambda left: left_scroll_listbox())
             self.bind("<Right>", lambda right: right_scroll_listbox())
-            self.bind("<Return>", lambda x1: selected_item())
-            self.bind("<F8>", lambda x2: update_item(name_db, self.listbox))
+            self.focus_set()
             return
+
+        def key_control_a(event):
+            if event.keycode == 65:  # Клавиша с буквой Ф и с англ. буквой A
+                start_time = time.time()
+                self.listbox.deactivate("all")
+                self.listbox.activate("all")
+                end_time = time.time()
+                duration = (end_time - start_time) * 1000  # В миллисекундах
+                print(f"Все элементы выделены за {duration:.2f} мс.")
+            return
+
+        # Запечатан
+        def on_ctrl_press(event):
+            if event.keysym == "Control_L":
+                prev_index = self.listbox.curselection()
+                antibug()
+                self.bind("<Delete>", lambda x3: [delete_items(name_db, self.listbox)])
+                self.bind("<BackSpace>", lambda x4: [delete_items(name_db, self.listbox)])
+                self.bind('<Control-KeyPress>', key_control_a)
+                self.unbind('<ButtonPress-1>')
+                self.unbind('<Button-2>')
+                if not self.is_ctrl_pressed:
+                    self.del_button.configure(command=lambda: delete_items(name_db, self.listbox))
+                    self.combobox_4.configure(state="disabled", border_color=("#8f8f8f", "#444444"), button_color=("#8f8f8f", "#444444"))
+                    self.clear_btn3.configure(command=None)
+                    self.help_btn_tab3.configure(command=None)
+                    self.con_button.configure(state="disabled", fg_color="#14375e")
+                    self.update_button.configure(state="disabled", fg_color="#14375e")
+                    self.add_button.configure(state="disabled", fg_color="#14375e")
+                    self.update_row_button.configure(state="disabled", fg_color="#14375e")
+                    self.combobox_5.configure(state="disabled", border_color=("#8f8f8f", "#444444"), button_color=("#8f8f8f", "#444444"))
+                    self.search_button.configure(state="disabled", fg_color="#14375e")
+                    self.after(50, lambda: self.clear_btn_baza.configure(state="disabled", fg_color="#ab590c", image=disconnect_disabled_img))
+                    self.after(150, lambda: self.clear_btn_search.configure(state="disabled", fg_color="#ab590c", image=clear_disabled_img))
+                    self.combobox_5.unbind("<Down>")
+                    self.combobox_5.unbind("<Return>")
+                    self.combobox_4.unbind("<Down>")
+                    self.bind("<Left>", lambda left: left_scroll_listbox())
+                    self.bind("<Right>", lambda right: right_scroll_listbox())
+                    self.unbind("<Insert>")
+                    self.unbind("<F5>")
+                    self.unbind("<F6>")
+                    self.unbind("<F8>")
+                    self.unbind("<F9>")
+                self.is_ctrl_pressed = True
+                self.listbox.configure(multiple_selection=True)
+                self.listbox.activate(prev_index)
+                self.bind("<Down>", lambda next: next_item_listbox())
+                self.bind("<Up>", lambda prev: prev_item_listbox())
+
+        # Колдун был отпущен и все грехи прощены
+        def on_ctrl_release(event):
+            if event.keysym == "Control_L":
+                self.is_ctrl_pressed = False
+                deactivating_indexes = self.listbox.curselection()
+                for i in range (0,len(deactivating_indexes)):
+                    self.listbox.deactivate(deactivating_indexes[i])
+                self.listbox.configure(multiple_selection=False)
+                self.del_button.configure(command=lambda: delete_item(name_db, self.listbox))
+                self.combobox_4.configure(state="readonly", border_color=("#979da2", "#565b5e"), button_color=("#979da2", "#565b5e"))
+                self.clear_btn3.configure(command=lambda: [clear_text(self.listbox), clear_count()])
+                self.help_btn_tab3.configure(command=lambda: help(self.tabview.get()))
+                self.con_button.configure(state="normal", fg_color="#1F538D")
+                self.update_button.configure(state="normal", fg_color="#1F538D")
+                self.add_button.configure(state="normal", fg_color="#1F538D")
+                self.update_row_button.configure(state="normal", fg_color="#1F538D")
+                self.combobox_5.configure(state="normal", border_color=("#979da2", "#565b5e"), button_color=("#979da2", "#565b5e"))
+                self.search_button.configure(state="normal", fg_color="#1F538D")
+                self.combobox_5.bind("<Down>", lambda open_var: self.combobox_5._clicked())
+                self.combobox_5.bind("<Return>", lambda combobox_5_var: search_item(name_db, self.listbox, self.combobox_5.get()))
+                self.combobox_4.bind("<Down>", lambda open_var: self.combobox_4._clicked())
+                self.after(50, lambda: self.clear_btn_baza.configure(state="normal", fg_color="#de710b", image=disconnect_img))
+                self.after(150, lambda: self.clear_btn_search.configure(state="normal", fg_color="#de710b", image=clear_img))
+                self.unbind("<KeyPress>")
+                self.unbind('<Control-KeyPress>')
+                self.bind("<Insert>", lambda insert_var: add_item(name_db, self.listbox))
+                self.bind("<F5>", lambda refresh_var: refresh_db(name_db, self.listbox))
+                self.bind("<F6>", lambda del_var: clear_entry_baza(self.combobox_4))
+                self.bind("<F8>", lambda x2: update_item(name_db, self.listbox))
+                self.bind("<F9>", lambda open_help: help(self.tabview.get()))
+                self.bind('<ButtonPress-1>', self.deselect_item)
+                self.bind('<Button-2>', self.deselect_item)
+
+        # Кантрал атпусти быстро блять гандоун
+        def simulate_ctrl_release():
+            class MockEvent:
+                def __init__(self, keysym):
+                    self.keysym = keysym
+            mock_event = MockEvent("Control_L")
+            on_ctrl_release(mock_event)
 
         # Бинд инсерта на добавление значения в базу (работает только для вкладки "База адресов") (Срал мочой короче) (UPD: Функция превратилась в полный пиздец)
         def bind_add_item_to_insert():
@@ -1276,24 +1524,31 @@ class App(ctk.CTk):
                 self.bind("<F9>", lambda open_help: help(self.tabview.get()))
                 if self.main_button_6._state == "disabled":
                     self.bind("<Insert>", lambda insert_var: add_item(name_db, self.listbox))
+                    self.bind("<KeyPress-Control_L>", on_ctrl_press)
+                    self.bind("<KeyRelease-Control_L>", on_ctrl_release)
                     self.bind("<F5>", lambda refresh_var: refresh_db(name_db, self.listbox))
-                    self.bind("<Control-Delete>", lambda delete_text: [clear_text(self.listbox), clear_count()])  # НАД ЭТИМ И ИНСЕРТОМ ЩЕ ПОДУМАТЬ, ОСТАЮТСЯ ВО ВРЕМЯ ОБНОВЛЕНИЯ ЕСЛИ ВЫЙТИ С 4 ВКЛАДКИ И САМОМУ ЗАЙТИ ОБРАТНО НА НЕЕ, ПОЧЕМУ СБРАСЫВАЕТСЯ
+                    #self.bind("<Control-Delete>", lambda delete_text: [clear_text(self.listbox), clear_count()])  # НАД ЭТИМ И ИНСЕРТОМ ЩЕ ПОДУМАТЬ, ОСТАЮТСЯ ВО ВРЕМЯ ОБНОВЛЕНИЯ ЕСЛИ ВЫЙТИ С 4 ВКЛАДКИ И САМОМУ ЗАЙТИ ОБРАТНО НА НЕЕ, ПОЧЕМУ СБРАСЫВАЕТСЯ
                 else:
                     self.unbind("<Insert>")
                     self.unbind("<F5>")
-                    self.unbind("<Control-Delete>")
+                    self.unbind("<KeyPress-Control_L>")
+                    self.unbind("<KeyRelease-Control_L>")
+                    #self.unbind("<Control-Delete>")
                 self.bind("<F7>", lambda focus_lisbox_var: [self.listbox.activate(0), self.listbox._parent_canvas.yview("moveto", 0)])
             elif self.tabview.get() == "Начальное окно":
                 self.unbind("<Down>")
                 self.unbind("<Up>")
                 self.unbind("<Double-Button-1>")
-                self.unbind("<Control-Delete>")
+                #self.unbind("<Control-Delete>")
                 self.unbind("<Insert>")
+                self.unbind("<KeyPress-Control_L>")
+                self.unbind("<KeyRelease-Control_L>")
                 self.unbind("<F5>")
                 self.unbind("<F9>")
                 self.unbind("<F7>")
                 self.after(50, lambda: self.bind("<Return>", lambda go: nav_tab2()))
                 try:
+                    simulate_ctrl_release()
                     self.listbox.deactivate(0)
                     self.previous_selected = None
                 except:
@@ -1302,14 +1557,17 @@ class App(ctk.CTk):
                 self.after(100, lambda: self.bind("<Down>", lambda next: self.textbox.yview_scroll(1, "units")))  # НОВАЯ
                 self.after(100, lambda: self.bind("<Up>", lambda next: self.textbox.yview_scroll(-1, "units")))  # НОВАЯ
                 self.unbind("<Double-Button-1>")
-                self.unbind("<Control-Delete>")
+                #self.unbind("<Control-Delete>")
                 self.unbind("<Insert>")
+                self.unbind("<KeyPress-Control_L>")
+                self.unbind("<KeyRelease-Control_L>")
                 self.unbind("<Return>")
                 self.unbind("<F5>")
                 self.unbind("<F7>")
                 self.bind("<F9>", lambda open_help: help(self.tabview.get()))
-                self.bind("<Control-Delete>", lambda delete_text: clear_text(self.textbox))
+                #self.bind("<Control-Delete>", lambda delete_text: clear_text(self.textbox))
                 try:
+                    simulate_ctrl_release()
                     self.listbox.deactivate(0)
                     self.previous_selected = None
                 except:
@@ -1317,16 +1575,19 @@ class App(ctk.CTk):
             else:
                 self.after(100, lambda: self.bind("<Down>", lambda next: self.textbox2.yview_scroll(1, "units"))) #НОВАЯ
                 self.after(100, lambda: self.bind("<Up>", lambda next: self.textbox2.yview_scroll(-1, "units"))) #НОВАЯ
-                self.unbind("<Control-Delete>")
+                #self.unbind("<Control-Delete>")
                 self.unbind("<Double-Button-1>")
                 self.unbind("<Insert>")
+                self.unbind("<KeyPress-Control_L>")
+                self.unbind("<KeyRelease-Control_L>")
                 self.unbind("<Return>")
                 self.unbind("<F5>")
                 self.unbind("<F8>")
                 self.unbind("<F7>")
                 self.bind("<F9>", lambda open_help: help(self.tabview.get()))
-                self.bind("<Control-Delete>", lambda delete_text: clear_text(self.textbox2))
+                #self.bind("<Control-Delete>", lambda delete_text: clear_text(self.textbox2))
                 try:
+                    simulate_ctrl_release()
                     self.listbox.deactivate(0)
                     self.previous_selected = None
                 except:
@@ -1364,7 +1625,7 @@ class App(ctk.CTk):
 
         # Антибаг при использовании хоткеев (и кнопок) на вкладке "База адресов" (ну насрал багооов, мдааа)
         def antibug():
-            if self.listbox.curselection() != None:
+            if self.listbox.curselection() != None and not self.listbox.multiple:
                 self.listbox.deactivate(0)
             #self.unbind("<Down>") #Возможно придется вернуть, сбрасывало новые бинды (скролл текстбоксов на стрелки) при переключении на фки между вкладками
             #self.unbind("<Up>")
@@ -1871,6 +2132,9 @@ class App(ctk.CTk):
         self.attributes("-alpha", 1)  # Ситцевые трусики ммм нямка сладуля
         self.opacity = 1
         self.language = ""
+        self.last_arrow = ""
+        self.total_users = 0
+        self.is_ctrl_pressed = False
         self.protocol("WM_DELETE_WINDOW", lambda: close_app())
         params = load_config()
         language, opacity, theme, scale = params
@@ -2116,7 +2380,7 @@ class App(ctk.CTk):
         self.tel_label_img = ctk.CTkLabel(self.tabview.tab("Подключение"), image=telnet_img, text="")
         self.tel_label_img.grid(row=7, column=1, padx=(18, 0), pady=(15, 30), sticky="w")
         self.entry3 = ctk.CTkEntry(self.tabview.tab("Подключение"), textvariable=x3, font=ctk.CTkFont(family="Trebuchet MS", size=13, weight="bold"))
-        self.entry3.grid(row=7, column=2, columnspan=3, padx=(18, 95), pady=(15, 30), sticky="ew")
+        self.entry3.grid(row=7, column=2, columnspan=3, padx=(18, 92), pady=(15, 30), sticky="ew")
         self.entry3.bind("<Return>", lambda entry3_var: clicked2(self.radio_var))
         self.entry3.bind("<Button-1>", lambda into_entry: left_click(self.entry3))
         self.entry3.bind("<Delete>", lambda del_var: clear_entry_telnet(self.entry3, self.radio_var))
@@ -2319,11 +2583,11 @@ class App(ctk.CTk):
         self.label9.grid(row=3, column=1, padx=(23, 0), pady=(0, 0), sticky="w")
         self.con_button = ctk.CTkButton(master=self.tabview.tab("База адресов"), fg_color="#1F538D", border_width=0, text_color=("white", "#DCE4EE"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="bold"), text="Открыть", command=selected_item)
         self.con_button.grid(row=4, column=1, padx=(23, 0), pady=(0, 0), sticky="w")
-        self.update_button = ctk.CTkButton(master=self.tabview.tab("База адресов"), fg_color="#1F538D", border_width=0, text_color=("white", "#DCE4EE"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="bold"), text="Обновить", command=lambda: refresh_db(name_db, self.listbox))
+        self.update_button = ctk.CTkButton(master=self.tabview.tab("База адресов"), fg_color="#1F538D", border_width=0, text_color=("white", "#DCE4EE"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="bold"), text="Обновить", command=lambda: [refresh_db(name_db, self.listbox)])
         self.update_button.grid(row=5, column=1, padx=(23, 0), pady=(0, 0), sticky="w")
-        self.add_button = ctk.CTkButton(master=self.tabview.tab("База адресов"), fg_color="#1F538D", border_width=0, text_color=("white", "#DCE4EE"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="bold"), text="Добавить", command=lambda: add_item(name_db, self.listbox))
+        self.add_button = ctk.CTkButton(master=self.tabview.tab("База адресов"), fg_color="#1F538D", border_width=0, text_color=("white", "#DCE4EE"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="bold"), text="Добавить", command=lambda: [add_item(name_db, self.listbox)])
         self.add_button.grid(row=6, column=1, padx=(23, 0), pady=(0, 0), sticky="w")
-        self.update_row_button = ctk.CTkButton(master=self.tabview.tab("База адресов"), fg_color="#1F538D", border_width=0, text_color=("white", "#DCE4EE"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="bold"), text="Изменить", command=lambda: update_item(name_db, self.listbox))
+        self.update_row_button = ctk.CTkButton(master=self.tabview.tab("База адресов"), fg_color="#1F538D", border_width=0, text_color=("white", "#DCE4EE"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="bold"), text="Изменить", command=lambda: [update_item(name_db, self.listbox)])
         self.update_row_button.grid(row=7, column=1, padx=(23, 0), pady=(0, 0), sticky="w")
         self.del_button = ctk.CTkButton(master=self.tabview.tab("База адресов"), fg_color="#de710b", hover_color="#ab590c", border_width=0, text_color=("white", "#DCE4EE"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="bold"), text="Удалить", command=lambda: delete_item(name_db, self.listbox))
         self.del_button.grid(row=8, column=1, padx=(23, 0), pady=(0, 0), sticky="w")
@@ -2422,7 +2686,12 @@ class App(ctk.CTk):
             self.after(150, lambda: self.focus_set())
             return
         if self.listbox.curselection() == self.previous_selected:
-            self.listbox.deactivate(0)
+            try:
+                self.listbox.deactivate(0)
+                print("Заебок чилок")
+            except:
+                print("Подключитесь к базе уебки")
+            self.listbox.configure(multiple_selection=False)
             self.bind("<Button-3>", lambda escape_entry: right_click())
             self.unbind("<Delete>")  # аналогичная подСТРАХовОЧКА для функции удаления
             self.unbind("<BackSpace>")

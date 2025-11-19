@@ -3,6 +3,7 @@ from PIL import Image, ImageTk
 import os
 import sys
 import time
+import pyautogui
 from typing import Literal
 #aboba
 
@@ -50,11 +51,13 @@ class CTkMessagebox(ctk.CTkToplevel):
                  fade_in_duration: int = 0,
                  sound: bool = False,
                  wraplength: int = 0,
+                 multiselection_on = False,
                  option_focus: Literal[1, 2, 3] = None):
 
         super().__init__()
 
         self.master_window = master
+        self.multiselection_on = multiselection_on
 
         self.width = 250 if width < 250 else width
         self.height = 150 if height < 150 else height
@@ -478,6 +481,9 @@ class CTkMessagebox(ctk.CTkToplevel):
         self.event = event
         if self.master_window:
             self.master_window.focus_force()
+        if self.multiselection_on:
+            #print("-----------PASHOL V PIZDU---------------")
+            self.after(200, lambda: pyautogui.press("ctrl", presses=1))
 
 
 if __name__ == "__main__":
