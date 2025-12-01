@@ -27,7 +27,7 @@ class LoginSSH(ctk.CTkToplevel):
                     close_window()
                     CTkMessagebox(opacity=opacity, message='The field must not be empty!', title='Error', icon='cancel')
                     return
-            #close_window()
+            close_window()
             if alg == "Auto":
                 os.system("start cmd /k ssh " + user_login + "@" + ip)
             else:
