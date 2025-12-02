@@ -1259,9 +1259,9 @@ class App(ctk.CTk):
                     cursor.close()
                     back_states_and_binds_after_refresh()
                     if self.language == "Русский":
-                        return CTkMessagebox(opacity = self.opacity, message='Поиск завершен, найдено: ' + str(count) + ' записей.', title='Успех', icon='check'), self.after(115, lambda: listbox.select(0))  # Спорный момент, нужно больше тестов
+                        return CTkMessagebox(opacity = self.opacity, message='Поиск завершен, найдено: ' + str(count) + ' записей.', title='Успех', icon='check'), self.after(130, lambda: listbox.select(0))  # Спорный момент, нужно больше тестов (было 115!)
                     else:
-                        return CTkMessagebox(opacity=self.opacity, message='Search completed, found:' + str(count) + ' records.', title='Success', icon='check'), self.after(115, lambda: listbox.select(0))
+                        return CTkMessagebox(opacity=self.opacity, message='Search completed, found:' + str(count) + ' records.', title='Success', icon='check'), self.after(130, lambda: listbox.select(0))
             except:
                 return refresh_db_after_search(name_db, self.listbox), back_states_and_binds_after_refresh()
 
