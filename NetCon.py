@@ -2605,8 +2605,8 @@ class App(ctk.CTk):
         self.combobox_5.bind("<Return>", lambda combobox_5_var: [search_item(name_db, self.listbox, self.combobox_5.get())])
         self.combobox_5.bind("<Down>", lambda open_var: self.combobox_5._clicked())
         self.combobox_5.bind("<Delete>", lambda del_var: clear_entry(self.combobox_5))
-        self.combobox_5.bind("<FocusIn>", lambda focus_on: self.after(100, lambda: [self.bind('<Escape>', lambda escape_entry: right_click())]))
-        self.combobox_5.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: close_app())])
+        self.combobox_5.bind("<FocusIn>", lambda focus_on: self.after(100, lambda: [self.bind('<Escape>', lambda escape_entry: right_click()), self.unbind("<KeyPress-Control_L>")]))
+        self.combobox_5.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: close_app()), self.bind("<KeyPress-Control_L>", on_ctrl_press)])
 
         clear_disabled_img = ctk.CTkImage(dark_image=Image.open(path_img + "img/clear_dis.png"), size=(20, 20))
         self.search_button = ctk.CTkButton(master=self.tabview.tab("База адресов"), fg_color="#1F538D", border_width=0, text_color=("white", "#DCE4EE"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="bold"), text="Найти", command=lambda: search_item(name_db, self.listbox, self.combobox_5.get()))
