@@ -1,7 +1,7 @@
 import updated_ctk as ctk
 import os
 import NetConWindows
-from NetConWindows import NetConTerminal, LoginSSH
+from NetConWindows import NetConTerminal, LoginSSH, CTkMessagebox
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
@@ -22,6 +22,7 @@ class SelectTerminal(ctk.CTkToplevel):
                 ssh_con(str(ip), self.master_window, opacity, self.language)
             elif con == "NetTerm":
                 master.iconify()
+                master.bind('<Escape>', lambda close: master.close_app())
                 session = NetConTerminal()
                 session(self.theme,ip,self.con_type, self.scale, opacity, master, self.language)
                 if self.scale != "100%":
