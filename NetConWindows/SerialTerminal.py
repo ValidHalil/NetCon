@@ -67,6 +67,7 @@ class SerialTerminal(ctk.CTkToplevel):
         self.bar_height = 0
         self.scaling_factor = 0
         self.next_after_conf = False
+        self.stop = False
         self.theme = theme
         self.last_command_list = LimitedList(10)
         self.title("SerialTerminal")
@@ -329,7 +330,10 @@ class SerialTerminal(ctk.CTkToplevel):
         try:
             self.serial_port = serial.Serial(port, baudrate)
             self.text_area.configure(state = "normal")
-            self.text_area.insert("end", f"\n Connected to {port} at {baudrate}")
+            if self.language != "Русский":
+                self.text_area.insert("end", f"\n Connected to: {port} at: {baudrate}")
+            else:
+                self.text_area.insert("end", f"\n Подключено к: {port} со скоростью: {baudrate}")
             self.adjust_textbox_height()
             self.text_area.configure(state="disabled")
             self.input_entry.configure(state="normal")
@@ -349,7 +353,10 @@ class SerialTerminal(ctk.CTkToplevel):
         except serial.SerialException as e:
             self.disconnect_serial()
             self.text_area.configure(state="normal")
-            self.text_area.insert("end", f"\n Error connecting to port {port}: {e}")
+            if self.language != "Русский":
+                self.text_area.insert("end", f"\n Error connecting to port {port}: {e}")
+            else:
+                self.text_area.insert("end", f"\n Ошибка подключения к порту {port}: {e}")
             self.text_area.see("end")
             self.adjust_textbox_height()
             self.text_area.configure(state="disabled")
@@ -366,7 +373,10 @@ class SerialTerminal(ctk.CTkToplevel):
             self.stop_event.set()  # Stop reading thread
             self.serial_port.close()
             self.text_area.configure(state="normal")
-            self.text_area.insert("end", "\n Disconnected from serial port.")
+            if self.language != "Русский":
+                self.text_area.insert("end", "\n Disconnected from serial port.")
+            else:
+                self.text_area.insert("end", "\n Отключение от последовательного порта.")
             self.adjust_textbox_height()
             self.text_area.configure(state="disabled")
             self.port_combobox.configure(state="readonly", border_color=("#979da2", "#565b5e"), button_color=("#979da2", "#565b5e"))
@@ -413,7 +423,10 @@ class SerialTerminal(ctk.CTkToplevel):
             self.serial_port.write("\r".encode())
         else:
             self.text_area.configure(state="normal")
-            self.text_area.insert("end", "\n\n ┌───────────────────────────┐\n │ Are you sure?[Y/N/RETURN] │\n └───────────────────────────┘ \n")
+            if self.language != "Русский":
+                self.text_area.insert("end", "\n\n ┌───────────────────────────┐\n │ Are you sure?[Y/N/RETURN] │\n └───────────────────────────┘ \n")
+            else:
+                self.text_area.insert("end", "\n\n ┌───────────────────────────┐\n │  Вы уверены?[Y/N/RETURN]  │\n └───────────────────────────┘ \n")
             self.adjust_textbox_height()
             self.text_area.configure(state="disabled")
             #size = self.text_area.get("1.0", "end").count("\n")
@@ -434,6 +447,7 @@ class SerialTerminal(ctk.CTkToplevel):
             self.last_command_list.append(move_element)
 
     def send_command(self): #для элтексов вроде заебца
+        self.stop = False #для авторизации (после успеха)
         self.many_input = ""
         command = self.input_entry.get() + "\r"
         if "\n" in command:
@@ -444,8 +458,7 @@ class SerialTerminal(ctk.CTkToplevel):
         self.nullstring = "\r"
         if self.serial_port and self.serial_port.is_open:
             try:
-                if ("reset " in command.lower() or "delete " in command.lower() or "boot " in command.lower() or "erase " in command.lower() or "write " in command.lower() or "reload" in command.lower() or "copy " in command.lower() or "default " in command.lower()) and "show" not in command.lower(): #Возможно будет дополняться
-                    #if "default " not in command.lower():
+                if ((("reset " in command.lower() or "delete " in command.lower() or "boot " in command.lower() or "erase " in command.lower() or ("wr" in command.lower() and " " in command.lower() and command.lower().startswith("wr")) or ("rel" in command.lower() and command.lower().startswith("rel")) or ("cop" in command.lower() and " " in command.lower() and command.lower().startswith("cop"))) and "(" not in self.current_name) or ("de" in command.lower() and command.lower().startswith("de") and "int" in command.lower() and " " in command.lower() and "(" in self.current_name)) and not command.lower().startswith("sh") and not command.lower().startswith("disp"): #Возможно будет дополняться
                     self.clear_text()
                     self.serial_port.write(command.encode())
                     self.after(150, lambda: self.reload_alert())
@@ -465,7 +478,10 @@ class SerialTerminal(ctk.CTkToplevel):
                 self.input_entry.configure(state="normal")
                 self.after(30, lambda: self.input_entry.focus_set())
                 self.text_area.configure(state="normal")
-                self.text_area.insert("end", f"\n Error sending command: {e}")
+                if self.language != "Русский":
+                    self.text_area.insert("end", f"\n Error sending command: {e}")
+                else:
+                    self.text_area.insert("end", f"\n Ошибка при отправке команды: {e}")
                 self.adjust_textbox_height()
                 self.text_area.see("end")
                 self.text_area.configure(state="disabled")
@@ -490,7 +506,10 @@ class SerialTerminal(ctk.CTkToplevel):
                 self.input_entry.configure(state="normal")
                 self.after(30, lambda: self.input_entry.focus_set())
                 self.text_area.configure(state="normal")
-                self.text_area.insert("end", f"\n Error sending command: {e}")
+                if self.language != "Русский":
+                    self.text_area.insert("end", f"\n Error sending command: {e}")
+                else:
+                    self.text_area.insert("end", f"\n Ошибка при отправке команды: {e}")
                 self.adjust_textbox_height()
                 self.text_area.see("end")
                 self.text_area.configure(state="disabled")
@@ -746,7 +765,13 @@ class SerialTerminal(ctk.CTkToplevel):
                     self.line = line.replace("z1x1c","")
                     if "    " in line and "#" in line: #for mes2424p (end of run config)
                         line = line.lstrip()
-                    if "More" in line:  # Other
+                    if "more" in line.lower():  # Other
+                        if self.language != "Русский":
+                            self.input_label.configure(text="  More: <Space>,  Quit: q or CTRL+C, One line: <Enter>", font=("Consolas", 14))
+                            self.old_name = "  More: <Space>,  Quit: q or CTRL+C, One line: <Enter>"
+                        else:
+                            self.input_label.configure(text="  Еще: <Space>, Выход: q или CTRL+C, Одна строка: <Enter>", font=("Consolas", 14))
+                            self.old_name = "  Еще: <Space>, Выход: q или CTRL+C, Одна строка: <Enter>"
                         self.after(100, lambda: self.input_entry.configure(state="readonly"))  # пока подумать
                         if self.flag == 1:
                             self.text_area.configure(state="normal")
@@ -757,6 +782,7 @@ class SerialTerminal(ctk.CTkToplevel):
                             self.text_area.configure(state="disabled")
                         self.after(100, lambda: [self.bind('<space>', lambda x: [self.send_command2(" " + "\r")]), self.bind('<KeyPress>', key_q), self.bind('<Control-KeyPress>', key_control_c)])
                     else:
+                        #self.input_label.configure(text=self.old_name, font=("Consolas", 14))
                         self.unbind('<space>')
                         self.unbind('<KeyPress>')
                         self.unbind('<Control-KeyPress>')
@@ -764,13 +790,10 @@ class SerialTerminal(ctk.CTkToplevel):
                         if self.flag == 1:
                             self.text_area.configure(state="normal")
                             line = line.replace("z1x1c", "")
-
                             line_index = line.find("#")
                             line_without_name = line[line_index+1:].replace("\n","").rstrip().lstrip()
                             drobl_line=line_without_name.split(" ")
                             esr_input_trigger = self.check_previous_element_in_next(drobl_line)
-                            #rint(drobl_line, " | ", esr_input_trigger)
-
                             if line.replace("\n", "").rstrip().lstrip() not in self.old_line.replace("\n", "").rstrip().lstrip() and self.current_input in line and self.current_input != "" and "login" not in self.line.lower() and "%" not in line and "^" not in line  and "syntax error" not in self.line.lower() or ("\n" in self.current_input and esr_input_trigger):
                                 if "\n" not in self.current_input:
                                     self.text_area.insert("end", f"\n {self.current_name + self.current_input}")
@@ -800,7 +823,6 @@ class SerialTerminal(ctk.CTkToplevel):
                                 self.after(50, lambda: self.hide_write())
                             else:
                                 self.next_after_conf = True
-
                             self.adjust_textbox_height()
                             self.text_area.configure(state="disabled")
                         else:
@@ -808,15 +830,22 @@ class SerialTerminal(ctk.CTkToplevel):
                     self.text_area.see("end")
                     x = self.text_area.get("1.0", "end").count("\n")
                     last_string = self.text_area.get(f"{x}.0", "end")
+                    #retry_string = self.text_area.get(f"{x-2}.0", "end")
                     if self.old_name == "Password:":
                         self.input_label.configure(self, fg_color=("#ffffff", "#1a1a1a"), width=20, bg_color=("#ffffff", "#1a1a1a"), text=" >", font=("Consolas", 18, "bold"), height=0)
-                    if ("login" in self.line.lower() or "User Name:" in self.line or "retry authentication" in last_string.lower()) and self.old_name != "Login:":
+                    if ("login" in self.line.lower() or "Username:" in self.line.lower() or "user name:" in self.line.lower() or "retry authentication" in last_string.lower()) and self.old_name != "Login:" or self.old_name == ">":
                         self.input_label.configure(text="  Login:", font=("Consolas", 14))
                         self.old_name = "Login:"
+                        if self.old_name != ">" and "press" in self.line.lower():
+                            self.input_label.configure(self, fg_color=("#ffffff", "#1a1a1a"), width=20, bg_color=("#ffffff", "#1a1a1a"), text=" >", font=("Consolas", 18, "bold"), height=0)
+                            self.old_name = ">"
                         continue
-                    if self.old_name == "Login:" and "password" not in self.line.lower() or self.old_input in last_string and self.old_name == "Login:":
+                    if (self.old_name == "Login:" and "password" not in self.line.lower() or self.old_input in last_string and self.old_name == "Login:") and "retry authentication" not in last_string.lower():
                         self.input_label.configure(text="  Password:", font=("Consolas", 14))
                         self.old_name = "Password:"
+                    if "password" in last_string.lower() and not self.stop: #ввод энтера после успешной авторизации ]]] and "press" not in retry_string.lower()
+                        self.send_command2("\r")
+                        self.stop = True
                     if "#" in line and len(line) < 40 and "# " not in line.rstrip() and " #" not in line:
                         index = line.find("#")
                         self.find_device_name(line[:index+1])
@@ -828,7 +857,10 @@ class SerialTerminal(ctk.CTkToplevel):
                 self.input_entry.configure(state="normal")
                 self.after(30, lambda: self.input_entry.focus_set())
                 self.text_area.configure(state="normal")
-                self.text_area.insert("end", f"\n Error reading from port: {e}")
+                if self.language != "Русский":
+                    self.text_area.insert("end", f"\n Error reading from port: {e}")
+                else:
+                    self.text_area.insert("end", f"\n Ошибка при чтении из порта: {e}")
                 self.adjust_textbox_height()
                 self.text_area.see("end")
                 self.text_area.configure(state="disabled")
@@ -837,7 +869,10 @@ class SerialTerminal(ctk.CTkToplevel):
             self.input_entry.configure(state="normal")
             self.after(30, lambda: self.input_entry.focus_set())
             self.text_area.configure(state="normal")
-            self.text_area.insert("end", "\n Reading thread stopped due to disconnect.")
+            if self.language != "Русский":
+                self.text_area.insert("end", "\n Reading thread stopped due to disconnect.")
+            else:
+                self.text_area.insert("end", "\n Процесс чтения прервался из-за разрыва соединения.")
             self.adjust_textbox_height()
             self.text_area.configure(state="disabled")
 

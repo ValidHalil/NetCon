@@ -538,7 +538,13 @@ class NetConTerminal(ctk.CTkToplevel):
                     line = self.remove_ansi_escape(line.encode())
                 #print(line.encode())
                 self.line = line.replace("z1x1c","")
-                if "More" in line:  # Other
+                if "more" in line.lower():  # Other
+                    if self.language != "Русский":
+                        self.input_label.configure(text="  More: <Space>,  Quit: q or CTRL+C, One line: <Enter>", font=("Consolas", 14))
+                        self.old_name = "  More: <Space>,  Quit: q or CTRL+C, One line: <Enter>"
+                    else:
+                        self.input_label.configure(text="  Еще: <Space>, Выход: q или CTRL+C, Одна строка: <Enter>", font=("Consolas", 14))
+                        self.old_name = "  Еще: <Space>, Выход: q или CTRL+C, Одна строка: <Enter>"
                     self.after(100, lambda: self.input_entry.configure(state="readonly"))  # пока подумать
                     self.after(300, lambda: self.input_entry.configure(state="readonly"))
                     if self.flag == 1:
@@ -744,7 +750,10 @@ class NetConTerminal(ctk.CTkToplevel):
             self.serial_port.write("\r".encode())
         else:
             self.text_area.configure(state="normal")
-            self.text_area.insert("end", "\n\n ┌───────────────────────────┐\n │ Are you sure?[Y/N/RETURN] │\n └───────────────────────────┘ \n")
+            if self.language != "Русский":
+                self.text_area.insert("end", "\n\n ┌───────────────────────────┐\n │ Are you sure?[Y/N/RETURN] │\n └───────────────────────────┘ \n")
+            else:
+                self.text_area.insert("end", "\n\n ┌───────────────────────────┐\n │  Вы уверены?[Y/N/RETURN]  │\n └───────────────────────────┘ \n")
             self.adjust_textbox_height()
             self.text_area.configure(state="disabled")
             #size = self.text_area.get("1.0", "end").count("\n")
@@ -775,8 +784,7 @@ class NetConTerminal(ctk.CTkToplevel):
         self.current_input = self.input_entry.get().lstrip().rstrip()
         self.nullstring = "\r"
         if self.net_connect:
-            if ("reset " in command.lower() or "delete " in command.lower() or "boot " in command.lower() or "erase " in command.lower() or "write " in command.lower() or "reload" in command.lower() or "copy " in command.lower() or "default " in command.lower()) and not command.lower().startswith("sh") and not command.lower().startswith("disp"):  # Возможно будет дополняться
-                #if "default " not in command.lower():
+            if ((("reset " in command.lower() or "delete " in command.lower() or "boot " in command.lower() or "erase " in command.lower() or ("wr" in command.lower() and " " in command.lower() and command.lower().startswith("wr")) or ("rel" in command.lower() and command.lower().startswith("rel")) or ("cop" in command.lower() and " " in command.lower() and command.lower().startswith("cop"))) and "(" not in self.current_name) or ("de" in command.lower() and command.lower().startswith("de") and "int" in command.lower() and " " in command.lower() and "(" in self.current_name)) and not command.lower().startswith("sh") and not command.lower().startswith("disp"):  # Возможно будет дополняться
                 self.clear_text()
                 self.net_connect.write_channel(command.encode())
                 self.after(150, lambda: self.reload_alert())
