@@ -79,7 +79,7 @@ class App(ctk.CTk):
                 serial_con(self.appearance_mode_optionemenu.get(), self.opacity, self.language)
                 clear_entry_telnet(self.entry3, self.radio_var)
                 if serial_con.get() == 1:
-                    self.bind('<Escape>', lambda close: close_app())
+                    self.bind('<Escape>', lambda close: self.close_app())
                     self.scaling_optionemenu.set(value="100%")
                     after_close_terminals()
             elif str(x3.get()) == "...":
@@ -109,7 +109,7 @@ class App(ctk.CTk):
                     select_terminal = SelectTerminal()
                     select_terminal(self.appearance_mode_optionemenu.get(),str(x3.get()),"Telnet", self.scaling_optionemenu.get(),self, self.opacity, self.language)
                     if select_terminal.get() == 1:
-                        self.bind('<Escape>', lambda close: close_app())
+                        self.bind('<Escape>', lambda close: self.close_app())
                         self.scaling_optionemenu.set(value="100%")
                         after_close_terminals()
                 elif s_radio == 2:
@@ -117,7 +117,7 @@ class App(ctk.CTk):
                     select_terminal = SelectTerminal()
                     select_terminal(self.appearance_mode_optionemenu.get(), str(x3.get()), "SSH", self.scaling_optionemenu.get(),self, self.opacity, self.language)
                     if select_terminal.get() == 1:
-                        self.bind('<Escape>', lambda close: close_app())
+                        self.bind('<Escape>', lambda close: self.close_app())
                         self.scaling_optionemenu.set(value="100%")
                         after_close_terminals()
                 elif s_radio == 4:
@@ -125,7 +125,7 @@ class App(ctk.CTk):
                     web_con = SelectWeb()
                     web_con(str(x3.get()),self, self.opacity, self.language)
                     if web_con.get() == 1:
-                        self.bind('<Escape>', lambda close: close_app())
+                        self.bind('<Escape>', lambda close: self.close_app())
 
         # Ping (это БАЗАААААА)
         def execute_cmd(ip, type_con, entry):
@@ -167,7 +167,7 @@ class App(ctk.CTk):
                 # костыль для того чтобы после остановки пинга на esc бинд на эту же клавишу в основной проге не возвращался сразу(хуй знает как но это работает)
                 if message5.get() == 1:
                     self.textbox.configure(state="disabled")
-                    self.bind('<Escape>', lambda close: close_app())
+                    self.bind('<Escape>', lambda close: self.close_app())
                     self.entry1.configure(state="normal", border_color=("#979da2", "#565b5e"), text_color=("gray14", "gray84"))
                     self.entry_tracert.configure(state="normal", border_color=("#979da2", "#565b5e"), text_color=("gray14", "gray84"))
                     self.combobox_ping.configure(state="readonly", border_color=("#979da2", "#565b5e"), button_color=("#979da2", "#565b5e"))
@@ -445,7 +445,7 @@ class App(ctk.CTk):
                 self.unbind("<F6>")
                 self.unbind("<F9>")
                 self.unbind("<F5>")  # тута неточна
-                #self.unbind("<Control-Delete>")
+                self.unbind("<Control-Delete>")
                 self.unbind("<Insert>")
                 self.unbind("<KeyPress-Control_L>")
                 self.unbind("<KeyRelease-Control_L>")
@@ -495,7 +495,7 @@ class App(ctk.CTk):
             self.unbind("<KeyRelease-Control_L>")
             self.unbind("<F5>")
             self.unbind("<F9>")
-            #self.unbind("<Control-Delete>")
+            self.unbind("<Control-Delete>")
             self.combobox_4.unbind("<Delete>")
             self.combobox_4.unbind("<Return>")
             self.textbox3.delete(0.0, "end")
@@ -538,7 +538,7 @@ class App(ctk.CTk):
                         self.unbind("<Insert>")
                         self.unbind("<KeyPress-Control_L>")
                         self.unbind("<KeyRelease-Control_L>")
-                        #self.unbind("<Control-Delete>")
+                        self.unbind("<Control-Delete>")
                     if self.language == "Русский":
                         CTkMessagebox(opacity=self.opacity, message=f'Подключение к БД: «{self.name}»\nпрошло успешно!', title='Успех', icon='check')
                     else:
@@ -575,7 +575,7 @@ class App(ctk.CTk):
             self.unbind("<F5>")
             self.unbind("<F6>")
             self.unbind("<F9>")
-            #self.unbind("<Control-Delete>")
+            self.unbind("<Control-Delete>")
             # self.unbind("<F1>")
             # self.unbind("<F2>")
             # self.unbind("<F3>")
@@ -606,7 +606,7 @@ class App(ctk.CTk):
                 self.unbind("<Insert>")
                 self.unbind("<KeyPress-Control_L>")
                 self.unbind("<KeyRelease-Control_L>")
-                #self.unbind("<Control-Delete>")
+                self.unbind("<Control-Delete>")
             return self.after(180, lambda: [app.update(), app.update_idletasks()])  # пока спорно
 
         #Оптимизация удаления (для более быстрой работы с базой, заебала эта красота, слишком медленно было)
@@ -811,7 +811,7 @@ class App(ctk.CTk):
                 con_type_window = SelectCon()
                 con_type_window(head, self.appearance_mode_optionemenu.get(), self.scaling_optionemenu.get(), self, self.opacity, self.language)
                 if con_type_window.get() == 1:
-                    self.bind('<Escape>', lambda close: close_app())
+                    self.bind('<Escape>', lambda close: self.close_app())
                     self.scaling_optionemenu.set(value="100%")
                     after_close_terminals()
             except:
@@ -1521,6 +1521,7 @@ class App(ctk.CTk):
                 self.unbind("<Down>")
                 self.unbind("<Up>")
                 self.unbind("<Return>")
+                self.unbind("<Control-Delete>")
                 self.bind("<F9>", lambda open_help: help(self.tabview.get()))
                 if self.main_button_6._state == "disabled":
                     self.bind("<Insert>", lambda insert_var: add_item(name_db, self.listbox))
@@ -1539,14 +1540,14 @@ class App(ctk.CTk):
                 self.unbind("<Down>")
                 self.unbind("<Up>")
                 self.unbind("<Double-Button-1>")
-                #self.unbind("<Control-Delete>")
+                self.unbind("<Control-Delete>")
                 self.unbind("<Insert>")
                 self.unbind("<KeyPress-Control_L>")
                 self.unbind("<KeyRelease-Control_L>")
                 self.unbind("<F5>")
                 self.unbind("<F9>")
                 self.unbind("<F7>")
-                self.after(50, lambda: self.bind("<Return>", lambda go: nav_tab2()))
+                self.after(150, lambda: self.bind("<Return>", lambda go: nav_tab2()))
                 try:
                     simulate_ctrl_release()
                     self.listbox.deactivate(0)
@@ -1557,7 +1558,7 @@ class App(ctk.CTk):
                 self.after(100, lambda: self.bind("<Down>", lambda next: self.textbox.yview_scroll(1, "units")))  # НОВАЯ
                 self.after(100, lambda: self.bind("<Up>", lambda next: self.textbox.yview_scroll(-1, "units")))  # НОВАЯ
                 self.unbind("<Double-Button-1>")
-                #self.unbind("<Control-Delete>")
+                self.unbind("<Control-Delete>")
                 self.unbind("<Insert>")
                 self.unbind("<KeyPress-Control_L>")
                 self.unbind("<KeyRelease-Control_L>")
@@ -1565,7 +1566,7 @@ class App(ctk.CTk):
                 self.unbind("<F5>")
                 self.unbind("<F7>")
                 self.bind("<F9>", lambda open_help: help(self.tabview.get()))
-                #self.bind("<Control-Delete>", lambda delete_text: clear_text(self.textbox))
+                self.bind("<Control-Delete>", lambda delete_text: clear_text(self.textbox))
                 try:
                     simulate_ctrl_release()
                     self.listbox.deactivate(0)
@@ -1575,7 +1576,7 @@ class App(ctk.CTk):
             else:
                 self.after(100, lambda: self.bind("<Down>", lambda next: self.textbox2.yview_scroll(1, "units"))) #НОВАЯ
                 self.after(100, lambda: self.bind("<Up>", lambda next: self.textbox2.yview_scroll(-1, "units"))) #НОВАЯ
-                #self.unbind("<Control-Delete>")
+                self.unbind("<Control-Delete>")
                 self.unbind("<Double-Button-1>")
                 self.unbind("<Insert>")
                 self.unbind("<KeyPress-Control_L>")
@@ -1585,7 +1586,7 @@ class App(ctk.CTk):
                 self.unbind("<F8>")
                 self.unbind("<F7>")
                 self.bind("<F9>", lambda open_help: help(self.tabview.get()))
-                #self.bind("<Control-Delete>", lambda delete_text: clear_text(self.textbox2))
+                self.bind("<Control-Delete>", lambda delete_text: clear_text(self.textbox2))
                 try:
                     simulate_ctrl_release()
                     self.listbox.deactivate(0)
@@ -1648,30 +1649,6 @@ class App(ctk.CTk):
             else:
                 self.after(50, lambda: combo.focus())
             return
-
-        # Костыль для закрытия проги на энтер (смари функцию ниже дээээб)
-        def full_close():
-            self.destroy()
-            self.grab_release()
-            quit(self)
-
-        # Закрытие приложения на ESC (нахуя если есть крестик???)
-        def close_app():
-            if self.language == "Русский":
-                msg = CTkMessagebox(opacity = self.opacity, message='Выйти из программы?', title='Внимание', icon='warning', option_1="Отмена", option_2="Да")
-            else:
-                msg = CTkMessagebox(opacity=self.opacity, message='Exit the program?', title='Attention', icon='warning', option_1="Cancel", option_2="Yes")
-            msg.bind("<Return>", lambda close_var: full_close())
-
-            msg.button_1.configure(fg_color="#de710b",hover_color="#ab590c")
-            msg.focus_set()
-            response = msg.get()
-            if response == "Отмена" or response == "Cancel":
-                return
-            if response == "Да" or response == "Yes":
-                self.destroy()
-                self.grab_release()
-                quit(self) # Я папысал нимножкааа и паслал тибя нахооой и сказал атсаси у миня крошкаааааа
 
         # Вызов тем
         # WhitePower
@@ -2135,7 +2112,7 @@ class App(ctk.CTk):
         self.last_arrow = ""
         self.total_users = 0
         self.is_ctrl_pressed = False
-        self.protocol("WM_DELETE_WINDOW", lambda: close_app())
+        self.protocol("WM_DELETE_WINDOW", lambda: self.close_app())
         params = load_config()
         language, opacity, theme, scale = params
 
@@ -2190,7 +2167,7 @@ class App(ctk.CTk):
         self.bind("<F2>", lambda open_tab_var: nav_tab2())
         self.bind("<F3>", lambda open_tab_var: nav_tab3())
         self.bind("<F4>", lambda open_tab_var: nav_tab4())
-        self.bind('<Escape>', lambda close: close_app())
+        self.bind('<Escape>', lambda close: self.close_app())
         self.bind("<Button-3>", lambda escape_entry: right_click())
 
         # Настройка общей(?) сетки
@@ -2318,14 +2295,14 @@ class App(ctk.CTk):
         self.entry1.bind("<Down>", lambda open_var: [self.combobox_ping._clicked(), self.after(50, lambda: self.entry1.focus_set())])
         self.entry1.bind("<Delete>", lambda del_var: clear_entry_ip(self.entry1, self.combobox_ping))
         self.entry1.bind("<FocusIn>", lambda focus_on: self.after(70, lambda: [self.unbind("<Down>"), self.unbind("<Up>"), self.bind('<Escape>', lambda escape_entry: right_click())]))
-        self.entry1.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: close_app()), self.after(50, lambda: self.bind("<Down>", lambda next: self.textbox.yview_scroll(1, "units"))), self.after(50, lambda: self.bind("<Up>", lambda next: self.textbox.yview_scroll(-1, "units")))] if self.tabview.get() == "Подключение" else print("sss"))
+        self.entry1.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: self.close_app()), self.after(50, lambda: self.bind("<Down>", lambda next: self.textbox.yview_scroll(1, "units"))), self.after(50, lambda: self.bind("<Up>", lambda next: self.textbox.yview_scroll(-1, "units")))] if self.tabview.get() == "Подключение" else print("sss"))
 
         self.combobox_ping = ctk.CTkComboBox(self.tabview.tab("Подключение"), values=["None", "/t", "/a", "win", "/t win", "/a win"], width=80, justify="c", state="readonly", font=ctk.CTkFont(family="Trebuchet MS", size=13, weight="bold"))
         self.combobox_ping.grid(row=1, column=5, columnspan=1, padx=(0, 0), pady=(30, 5), sticky="nsew")
         self.combobox_ping.set(value="None")
         self.combobox_ping.bind("<Down>", lambda open_var: self.combobox_ping._clicked())
         self.combobox_ping.bind("<FocusIn>", lambda focus_on: self.after(100, lambda: [self.unbind("<Down>"), self.unbind("<Up>"), self.bind('<Escape>', lambda escape_entry: right_click())]))
-        self.combobox_ping.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: close_app()), self.after(50, lambda: self.bind("<Down>", lambda next: self.textbox.yview_scroll(1, "units"))), self.after(50, lambda: self.bind("<Up>", lambda next: self.textbox.yview_scroll(-1, "units")))] if self.tabview.get() == "Подключение" else print("sss"))
+        self.combobox_ping.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: self.close_app()), self.after(50, lambda: self.bind("<Down>", lambda next: self.textbox.yview_scroll(1, "units"))), self.after(50, lambda: self.bind("<Up>", lambda next: self.textbox.yview_scroll(-1, "units")))] if self.tabview.get() == "Подключение" else print("sss"))
         self.combobox_ping.bind("<Return>", lambda entry1_var: execute_cmd(str(x.get()), self.combobox_ping.get(), self.entry1))
         self.main_button_1 = ctk.CTkButton(master=self.tabview.tab("Подключение"), fg_color="#1F538D", border_width=0, text_color=("white", "#DCE4EE"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="bold"), text="Начать", command=lambda: execute_cmd(str(x.get()), self.combobox_ping.get(), self.entry1))
         self.main_button_1.grid(row=1, column=6, padx=(20, 0), pady=(30, 5), sticky="nsew")
@@ -2346,14 +2323,14 @@ class App(ctk.CTk):
         self.entry_tracert.bind("<Down>", lambda open_var: [self.combobox_tracert._clicked(), self.after(50, lambda: self.entry_tracert.focus_set())])
         self.entry_tracert.bind("<Delete>", lambda del_var: clear_entry_ip(self.entry_tracert, self.combobox_tracert))
         self.entry_tracert.bind("<FocusIn>", lambda focus_on: self.after(100, lambda: [self.unbind("<Down>"), self.unbind("<Up>"), self.bind('<Escape>', lambda escape_entry: right_click())]))
-        self.entry_tracert.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: close_app()), self.after(50, lambda: self.bind("<Down>", lambda next: self.textbox.yview_scroll(1, "units"))), self.after(50, lambda: self.bind("<Up>", lambda next: self.textbox.yview_scroll(-1, "units")))] if self.tabview.get() == "Подключение" else print("sss"))
+        self.entry_tracert.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: self.close_app()), self.after(50, lambda: self.bind("<Down>", lambda next: self.textbox.yview_scroll(1, "units"))), self.after(50, lambda: self.bind("<Up>", lambda next: self.textbox.yview_scroll(-1, "units")))] if self.tabview.get() == "Подключение" else print("sss"))
 
         self.combobox_tracert = ctk.CTkComboBox(self.tabview.tab("Подключение"), values=[" None ", "/d", "/j", " win ", "/d win", "/j win"], width=80, justify="c", state="readonly", font=ctk.CTkFont(family="Trebuchet MS", size=13, weight="bold"))
         self.combobox_tracert.grid(row=2, column=5, padx=(0, 0), pady=(10, 20), sticky="nsew")
         self.combobox_tracert.set(value=" None ")
         self.combobox_tracert.bind("<Down>", lambda open_var: self.combobox_tracert._clicked())
         self.combobox_tracert.bind("<FocusIn>", lambda focus_on: self.after(70, lambda: [self.unbind("<Down>"), self.unbind("<Up>"), self.bind('<Escape>', lambda escape_entry: right_click())]))
-        self.combobox_tracert.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: close_app()), self.after(50, lambda: self.bind("<Down>", lambda next: self.textbox.yview_scroll(1, "units"))), self.after(50, lambda: self.bind("<Up>", lambda next: self.textbox.yview_scroll(-1, "units")))] if self.tabview.get() == "Подключение" else print("sss"))
+        self.combobox_tracert.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: self.close_app()), self.after(50, lambda: self.bind("<Down>", lambda next: self.textbox.yview_scroll(1, "units"))), self.after(50, lambda: self.bind("<Up>", lambda next: self.textbox.yview_scroll(-1, "units")))] if self.tabview.get() == "Подключение" else print("sss"))
         self.combobox_tracert.bind("<Return>", lambda entry_tracert_var: execute_cmd(str(x_tr.get()), self.combobox_tracert.get(), self.entry_tracert))
         self.main_button_2 = ctk.CTkButton(master=self.tabview.tab("Подключение"), fg_color="#1F538D", border_width=0, text_color=("white", "#DCE4EE"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="bold"), text="Начать", command=lambda: execute_cmd(str(x_tr.get()), self.combobox_tracert.get(), self.entry_tracert))
         self.main_button_2.grid(row=2, column=6, padx=(20, 0), pady=(10, 20), sticky="nsew")
@@ -2385,7 +2362,7 @@ class App(ctk.CTk):
         self.entry3.bind("<Button-1>", lambda into_entry: left_click(self.entry3))
         self.entry3.bind("<Delete>", lambda del_var: clear_entry_telnet(self.entry3, self.radio_var))
         self.entry3.bind("<FocusIn>", lambda focus_on: self.after(100, lambda: [self.unbind("<Down>"), self.unbind("<Up>"), self.bind('<Escape>', lambda escape_entry: right_click())] if self.tabview.get() == "Подключение" else print("sss")))
-        self.entry3.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: close_app()), self.after(50, lambda: self.bind("<Down>", lambda next: self.textbox.yview_scroll(1, "units"))), self.after(50, lambda: self.bind("<Up>", lambda next: self.textbox.yview_scroll(-1, "units")))] if self.tabview.get() == "Подключение" else print("sss"))
+        self.entry3.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: self.close_app()), self.after(50, lambda: self.bind("<Down>", lambda next: self.textbox.yview_scroll(1, "units"))), self.after(50, lambda: self.bind("<Up>", lambda next: self.textbox.yview_scroll(-1, "units")))] if self.tabview.get() == "Подключение" else print("sss"))
         ip_entry_string_last_valid2 = [u"..."]
         x3.trace("w", lambda *args: entry_mask_check(x3, ip_entry_string_last_valid2, self.entry3))
         x3.set("")
@@ -2431,7 +2408,7 @@ class App(ctk.CTk):
         self.combobox_ipconfig.bind("<Down>", lambda open_var: self.combobox_ipconfig._clicked())
         self.combobox_ipconfig.bind("<Delete>", lambda del_var: clear_entry(self.combobox_ipconfig))
         self.combobox_ipconfig.bind("<FocusIn>", lambda focus_on: self.after(100, lambda: [self.unbind("<Down>"), self.unbind("<Up>"), self.bind('<Escape>', lambda escape_entry: right_click())]))
-        self.combobox_ipconfig.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: close_app()), self.after(50, lambda: self.bind("<Down>", lambda next: self.textbox2.yview_scroll(1, "units"))), self.after(50, lambda: self.bind("<Up>", lambda next: self.textbox2.yview_scroll(-1, "units")))] if self.tabview.get() == "Параметры сети" else print("sss"))
+        self.combobox_ipconfig.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: self.close_app()), self.after(50, lambda: self.bind("<Down>", lambda next: self.textbox2.yview_scroll(1, "units"))), self.after(50, lambda: self.bind("<Up>", lambda next: self.textbox2.yview_scroll(-1, "units")))] if self.tabview.get() == "Параметры сети" else print("sss"))
         self.button_ipconfig = ctk.CTkButton(master=self.tabview.tab("Параметры сети"), fg_color="#1F538D", border_width=0, text_color=("white", "#DCE4EE"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="bold"), text="Показать", command=lambda: execute_cmd2("ipconfig " + str(x2.get())))
         self.button_ipconfig.grid(row=1, column=8, padx=(20, 10), pady=(30, 5), sticky="nsew")
         self.clear_btn_ipconfig = ctk.CTkButton(master=self.tabview.tab("Параметры сети"), width=20, fg_color="#de710b", border_width=0, hover_color="#ab590c", image=clear_img, text="", command=lambda: clear_entry(self.combobox_ipconfig))
@@ -2448,7 +2425,7 @@ class App(ctk.CTk):
         self.combobox_2.bind("<Delete>", lambda del_var: clear_entry(self.combobox_2))
         self.combobox_2._canvas.bind("<Enter>", lambda ada: get_adapters_list_click(self.combobox_2)) # Для обновления списка именно перед кликом (грязно-грязно)
         self.combobox_2.bind("<FocusIn>", lambda focus_on: self.after(100, lambda: [self.unbind("<Down>"), self.unbind("<Up>"), self.bind('<Escape>', lambda escape_entry: right_click())]))
-        self.combobox_2.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: close_app()), self.after(50, lambda: self.bind("<Down>", lambda next: self.textbox2.yview_scroll(1, "units"))), self.after(50, lambda: self.bind("<Up>", lambda next: self.textbox2.yview_scroll(-1, "units")))] if self.tabview.get() == "Параметры сети" else print("sss"))
+        self.combobox_2.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: self.close_app()), self.after(50, lambda: self.bind("<Down>", lambda next: self.textbox2.yview_scroll(1, "units"))), self.after(50, lambda: self.bind("<Up>", lambda next: self.textbox2.yview_scroll(-1, "units")))] if self.tabview.get() == "Параметры сети" else print("sss"))
         self.main_button_4 = ctk.CTkButton(master=self.tabview.tab("Параметры сети"), fg_color="#1F538D", border_width=0, text_color=("white", "#DCE4EE"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="bold"), text="Показать", command=lambda: execute_cmd3('netsh interface ipv4 show config name="' + str(x4.get()) + '"'))
         self.main_button_4.grid(row=2, column=8, padx=(20, 10), pady=(10, 10), sticky="nsew")
         self.clear_btn_adapter = ctk.CTkButton(master=self.tabview.tab("Параметры сети"), width=20, fg_color="#de710b", border_width=0, hover_color="#ab590c", image=clear_img, text="", command=lambda: clear_entry(self.combobox_2))
@@ -2480,7 +2457,7 @@ class App(ctk.CTk):
         self.combobox_3.bind("<Delete>", lambda del_var: clear_entry(self.combobox_3))
         self.combobox_3._canvas.bind("<Enter>", lambda ada: get_adapters_list_click(self.combobox_3)) # Для обновления списка именно перед кликом (грязно-грязно)
         self.combobox_3.bind("<FocusIn>", lambda focus_on: self.after(100, lambda: [self.unbind("<Down>"), self.unbind("<Up>"), self.bind('<Escape>', lambda escape_entry: right_click())]))
-        self.combobox_3.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: close_app()), self.after(50, lambda: self.bind("<Down>", lambda next: self.textbox2.yview_scroll(1, "units"))), self.after(50, lambda: self.bind("<Up>", lambda next: self.textbox2.yview_scroll(-1, "units")))] if self.tabview.get() == "Параметры сети" else print("sss"))
+        self.combobox_3.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: self.close_app()), self.after(50, lambda: self.bind("<Down>", lambda next: self.textbox2.yview_scroll(1, "units"))), self.after(50, lambda: self.bind("<Up>", lambda next: self.textbox2.yview_scroll(-1, "units")))] if self.tabview.get() == "Параметры сети" else print("sss"))
         self.clear_btn_adapter2 = ctk.CTkButton(master=self.tabview.tab("Параметры сети"), width=20, fg_color="#de710b", border_width=0, hover_color="#ab590c", image=clear_img, text="", command=lambda: clear_entry(self.combobox_3))
         self.clear_btn_adapter2.grid(row=5, column=2, padx=(10, 20), pady=(10, 20), sticky="w")
 
@@ -2492,7 +2469,7 @@ class App(ctk.CTk):
         self.entry6.bind("<Button-1>", lambda into_entry: left_click(self.entry6))
         self.entry6.bind("<Delete>", lambda del_var: clear_entry(self.entry6))
         self.entry6.bind("<FocusIn>", lambda focus_on: self.after(100, lambda: [self.unbind("<Down>"), self.unbind("<Up>"), self.bind('<Escape>', lambda escape_entry: right_click())]))
-        self.entry6.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: close_app()), self.after(50, lambda: self.bind("<Down>", lambda next: self.textbox2.yview_scroll(1, "units"))), self.after(50, lambda: self.bind("<Up>", lambda next: self.textbox2.yview_scroll(-1, "units")))] if self.tabview.get() == "Параметры сети" else print("sss"))
+        self.entry6.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: self.close_app()), self.after(50, lambda: self.bind("<Down>", lambda next: self.textbox2.yview_scroll(1, "units"))), self.after(50, lambda: self.bind("<Up>", lambda next: self.textbox2.yview_scroll(-1, "units")))] if self.tabview.get() == "Параметры сети" else print("sss"))
         self.clear_btn_ips = ctk.CTkButton(master=self.tabview.tab("Параметры сети"), width=20, fg_color="#de710b", border_width=0, hover_color="#ab590c", image=clear_img, text="", command=lambda: clear_entry(self.entry6))
         self.clear_btn_ips.grid(row=6, column=2, padx=(10, 20), pady=(0, 20), sticky="w")
         ip_entry_string_last_valid3 = [u"..."]
@@ -2507,7 +2484,7 @@ class App(ctk.CTk):
         self.entry7.bind("<Button-1>", lambda into_entry: left_click(self.entry7))
         self.entry7.bind("<Delete>", lambda del_var: clear_entry(self.entry7))
         self.entry7.bind("<FocusIn>", lambda focus_on: self.after(100, lambda: [self.unbind("<Down>"), self.unbind("<Up>"), self.bind('<Escape>', lambda escape_entry: right_click())]))
-        self.entry7.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: close_app()), self.after(50, lambda: self.bind("<Down>", lambda next: self.textbox2.yview_scroll(1, "units"))), self.after(50, lambda: self.bind("<Up>", lambda next: self.textbox2.yview_scroll(-1, "units")))] if self.tabview.get() == "Параметры сети" else print("sss"))
+        self.entry7.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: self.close_app()), self.after(50, lambda: self.bind("<Down>", lambda next: self.textbox2.yview_scroll(1, "units"))), self.after(50, lambda: self.bind("<Up>", lambda next: self.textbox2.yview_scroll(-1, "units")))] if self.tabview.get() == "Параметры сети" else print("sss"))
         self.clear_btn_mask = ctk.CTkButton(master=self.tabview.tab("Параметры сети"), width=20, fg_color="#de710b", border_width=0, hover_color="#ab590c", image=clear_img, text="", command=lambda: clear_entry(self.entry7))
         self.clear_btn_mask.grid(row=7, column=2, padx=(10, 20), pady=(0, 20), sticky="w")
         ip_entry_string_last_valid4 = [u"..."]
@@ -2522,7 +2499,7 @@ class App(ctk.CTk):
         self.entry8.bind("<Button-1>", lambda into_entry: left_click(self.entry8))
         self.entry8.bind("<Delete>", lambda del_var: clear_entry(self.entry8))
         self.entry8.bind("<FocusIn>", lambda focus_on: self.after(100, lambda: [self.unbind("<Down>"), self.unbind("<Up>"), self.bind('<Escape>', lambda escape_entry: right_click())]))
-        self.entry8.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: close_app()), self.after(50, lambda: self.bind("<Down>", lambda next: self.textbox2.yview_scroll(1, "units"))), self.after(50, lambda: self.bind("<Up>", lambda next: self.textbox2.yview_scroll(-1, "units")))] if self.tabview.get() == "Параметры сети" else print("sss"))
+        self.entry8.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: self.close_app()), self.after(50, lambda: self.bind("<Down>", lambda next: self.textbox2.yview_scroll(1, "units"))), self.after(50, lambda: self.bind("<Up>", lambda next: self.textbox2.yview_scroll(-1, "units")))] if self.tabview.get() == "Параметры сети" else print("sss"))
         self.clear_btn_gate = ctk.CTkButton(master=self.tabview.tab("Параметры сети"), width=20, fg_color="#de710b", border_width=0, hover_color="#ab590c", image=clear_img, text="", command=lambda: clear_entry(self.entry8))
         self.clear_btn_gate.grid(row=8, column=2, padx=(10, 20), pady=(0, 20), sticky="w")
         ip_entry_string_last_valid5 = [u"..."]
@@ -2556,7 +2533,7 @@ class App(ctk.CTk):
         self.combobox_4.bind("<Down>", lambda open_var: self.combobox_4._clicked())
         self.combobox_4.bind("<Delete>", lambda del_var: clear_entry(self.combobox_4))
         self.combobox_4.bind("<FocusIn>", lambda focus_on: self.after(100, lambda: [self.bind('<Escape>', lambda escape_entry: right_click())]))
-        self.combobox_4.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: close_app())])
+        self.combobox_4.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: self.close_app())])
 
         self.main_button_6 = ctk.CTkButton(master=self.tabview.tab("База адресов"), fg_color="#1F538D", border_width=0, text_color=("white", "#DCE4EE"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="bold"), text="Соединить", command=lambda: show_db(name_db, self.listbox))
         self.main_button_6.grid(row=1, column=4, padx=(20, 10), pady=(30, 20), sticky="nsew")
@@ -2606,7 +2583,7 @@ class App(ctk.CTk):
         self.combobox_5.bind("<Down>", lambda open_var: self.combobox_5._clicked())
         self.combobox_5.bind("<Delete>", lambda del_var: clear_entry(self.combobox_5))
         self.combobox_5.bind("<FocusIn>", lambda focus_on: self.after(100, lambda: [self.bind('<Escape>', lambda escape_entry: right_click()), self.unbind("<KeyPress-Control_L>")]))
-        self.combobox_5.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: close_app()), self.bind("<KeyPress-Control_L>", on_ctrl_press)])
+        self.combobox_5.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: self.close_app()), self.bind("<KeyPress-Control_L>", on_ctrl_press)])
 
         clear_disabled_img = ctk.CTkImage(dark_image=Image.open(path_img + "img/clear_dis.png"), size=(20, 20))
         self.search_button = ctk.CTkButton(master=self.tabview.tab("База адресов"), fg_color="#1F538D", border_width=0, text_color=("white", "#DCE4EE"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="bold"), text="Найти", command=lambda: search_item(name_db, self.listbox, self.combobox_5.get()))
@@ -2679,6 +2656,29 @@ class App(ctk.CTk):
             the_file.write("Host *\n")
             the_file.write("    HostkeyAlgorithms +ssh-rsa\n")
             # the_file.write("    PubkeyAcceptedAlgorithms +ssh-rsa\n")
+
+    # Костыль для закрытия проги на энтер (смари функцию ниже дээээб)
+    def full_close(self):
+        self.destroy()
+        self.grab_release()
+        quit(self)
+
+    # Закрытие приложения на ESC (нахуя если есть крестик???)
+    def close_app(self):
+        if self.language == "Русский":
+            msg = CTkMessagebox(opacity=self.opacity, message='Выйти из программы?', title='Внимание', icon='warning', option_1="Отмена", option_2="Да")
+        else:
+            msg = CTkMessagebox(opacity=self.opacity, message='Exit the program?', title='Attention', icon='warning', option_1="Cancel", option_2="Yes")
+        msg.bind("<Return>", lambda close_var: self.full_close())
+        msg.button_1.configure(fg_color="#de710b", hover_color="#ab590c")
+        msg.focus_set()
+        response = msg.get()
+        if response == "Отмена" or response == "Cancel":
+            return
+        if response == "Да" or response == "Yes":
+            self.destroy()
+            self.grab_release()
+            quit(self)  # Я папысал нимножкааа и паслал тибя нахооой и сказал атсаси у миня крошкаааааа
 
     # Снятие селекта с поля listbox при нажатии за границы поля
     def deselect_item(self, event):
