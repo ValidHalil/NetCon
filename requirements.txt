@@ -1,0 +1,6 @@
+pyautogui
+pillow
+netmiko
+psutil
+customtkinter
+keyboard
