@@ -606,10 +606,10 @@ class App(ctk.CTk):
                         self.unbind("<Control-Delete>")
                     if self.language == "Русский":
                         if self.alert_mode:
-                            CTkMessagebox(opacity=self.opacity, message=f'Подключение к БД: «{self.name}»\nпрошло успешно!', title='Успех!', icon='check', master=self, button_width=self.alert_button_size)
+                            CTkMessagebox(opacity=self.opacity, message=f'Подключение к БД: «{self.rus_name}»\nпрошло успешно!', title='Успех!', icon='check', master=self, button_width=self.alert_button_size)
                     else:
                         if self.alert_mode:
-                            CTkMessagebox(opacity=self.opacity, message=f'Connection to DB: «{self.eng_name}»\nwas Success!ful!', title='Success!', icon='check', master=self, button_width=self.alert_button_size)
+                            CTkMessagebox(opacity=self.opacity, message=f'Connection to DB: «{self.name}»\nwas successful!', title='Success!', icon='check', master=self, button_width=self.alert_button_size)
                     return self.after(100, lambda: self.focus_set()), self.after(120, lambda: [self.bind("<F6>", lambda del_var: clear_entry_baza(self.combobox_4)), self.bind("<Insert>", lambda insert_var: add_item(name_db, self.listbox)), self.bind("<KeyPress-Control_L>", on_ctrl_press), self.bind("<KeyRelease-Control_L>", on_ctrl_release), self.bind("<F5>", lambda refresh_var: refresh_db(name_db, self.listbox)), self.bind("<F9>", lambda open_help: help(self.tabview.get()))])
             except:
                 self.combobox_4.configure(state="normal")
@@ -811,30 +811,30 @@ class App(ctk.CTk):
                     back_states_and_binds_after_refresh()
                     if self.language == "Русский":
                         if self.alert_mode:
-                            CTkMessagebox(opacity=self.opacity, message=f'Вы успешно переподключились к\nБД: «{self.name}»!', title='Успех!', icon='check', master=self, button_width=self.alert_button_size)
+                            CTkMessagebox(opacity=self.opacity, message=f'Вы успешно переподключились к\nБД: «{self.rus_name}»!', title='Успех!', icon='check', master=self, button_width=self.alert_button_size)
                         return
                     else:
                         if self.alert_mode:
-                            CTkMessagebox(opacity=self.opacity, message=f'You have Success!fully reconnected \nto the DB: «{self.eng_name}»!', title='Success!', icon='check', master=self, button_width=self.alert_button_size)
+                            CTkMessagebox(opacity=self.opacity, message=f'You have successfully reconnected \nto the DB: «{self.name}»!', title='Success!', icon='check', master=self, button_width=self.alert_button_size)
                         return
             except:
                 return
 
         def check_db_eng_name(name):
             self.name = name.get()
-            self.eng_name = name.get()
-            if name.get() == "Switches":
-                self.name = "Коммутаторы"
-            elif name.get() == "Routers":
-                self.name = "Маршрутизаторы"
-            elif name.get() == "Multiplexers":
-                self.name = "Мультиплексоры"
-            elif name.get() == "Power supply":
-                self.name = "Электропитание"
-            elif name.get() == "Phones":
-                self.name = "Телефоны"
-            elif name.get() == "Other":
-                self.name = "Другое"
+            self.rus_name = name.get()
+            if name.get() == "Коммутаторы":
+                self.name = "Switches"
+            elif name.get() == "Маршрутизаторы":
+                self.name = "Routers"
+            elif name.get() == "Мультиплексоры":
+                self.name = "Multiplexers"
+            elif name.get() == "Электропитание":
+                self.name = "Power supply"
+            elif name.get() == "Телефоны":
+                self.name = "Phones"
+            elif name.get() == "Другое":
+                self.name = "Other"
 
         # Обновление внатуре без хуйни (отвечаю) для скалинг ивента (после того как заново отрисовали листбоксы поске изм-я скейла)
         def refresh_db_after_scale(name, listbox):
