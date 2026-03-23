@@ -46,10 +46,8 @@ The application is under development, so any comments will be taken into account
 
 # Images / Изображения:
 
-# <img width="1145" height="654" alt="image" src="https://github.com/user-attachments/assets/8b643231-0177-4305-a28e-30bccd9cf3d5" />
-# <img width="1144" height="654" alt="image" src="https://github.com/user-attachments/assets/595d356e-2348-4469-bb33-6b41f76629b3" />
-# <img width="1146" height="654" alt="image" src="https://github.com/user-attachments/assets/da9a7001-6d3d-4944-ad9a-1f49ab04d47a" />
-# <img width="1136" height="648" alt="image" src="https://github.com/user-attachments/assets/a38facee-0f5b-4da6-bef3-552c2e06c8ed" />
+# 
+
 
 
 
