@@ -46,7 +46,17 @@ The application is under development, so any comments will be taken into account
 
 # Images / Изображения:
 
-# 
+# <img width="1121" height="634" alt="image" src="https://github.com/user-attachments/assets/c6db8e2b-d749-4cea-90b5-d37ef018cbd9" />
+# <img width="1117" height="628" alt="image" src="https://github.com/user-attachments/assets/49495c87-aba3-42af-8a80-8dcf4c9afa18" />
+# <img width="1117" height="626" alt="image" src="https://github.com/user-attachments/assets/bece241e-634f-40e2-b1dd-c645ae997b58" />
+# <img width="1116" height="627" alt="image" src="https://github.com/user-attachments/assets/27d13321-ff2e-48ca-a9c6-02c37ab1a1e9" />
+# <img width="1116" height="627" alt="image" src="https://github.com/user-attachments/assets/bca10756-69b5-4596-b0b2-d0dc37a90a7d" />
+# <img width="1117" height="626" alt="image" src="https://github.com/user-attachments/assets/0023c4c3-7536-4b19-94b2-24bf5722702b" />
+
+
+
+
+
 
 
 
