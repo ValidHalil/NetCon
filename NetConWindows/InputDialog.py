@@ -163,23 +163,23 @@ class InputDialog(ctk.CTkToplevel):
 
         # В зависимости от базы выводится свой список устройств
         vendors_list = []
-        if self._name_db == "Коммутаторы":
+        if self._name_db == "Switches":
             vendors_list = ["Eltex MES", "Cisco", "Avaya", "Aruba", "TP-Link", "D-Link", "Zyxel", "Allied Telesis", "Nateks", "SNR", "Qtech", "Juniper", "MikroTik", "Huawei", "Nortel"]
             vendors_list = sorted(vendors_list)
             wi_var = 144
-        elif self._name_db == "Маршрутизаторы":
+        elif self._name_db == "Routers":
             vendors_list = ["Eltex ESR", "Cisco","Avaya", "Aruba", "TP-Link", "D-Link", "Zyxel", "Allied Telesis", "Nateks", "SNR", "Qtech", "Juniper", "MikroTik", "Huawei", "Nortel"]
             vendors_list = sorted(vendors_list)
             wi_var = 144
-        elif self._name_db == "Мультиплексоры":
+        elif self._name_db == "Multiplexers":
             vendors_list = ["RAD", "Оптик", "RAD MP2100", "MC04", "Nortel OME", "MOXA", "Zelax", "Eltex ToPGATE", "CRONYX", "Juniper", "ПолиКом", "Ruijie Networks", "Cisco", "Adtran", "Huawei"]
             vendors_list = sorted(vendors_list)
             wi_var = 156
-        elif self._name_db == "Телефоны":
+        elif self._name_db == "Phones":
             vendors_list = ["Cisco", "Yealink", "Eltex", "Avaya", "Polycom", "Panasonic", "Grandstream", "Snom", "Fanvil", "Jabra", "TP-Link", "D-Link", "Gigaset", "Unify", "Aastra"]
             vendors_list = sorted(vendors_list)
             wi_var = 151
-        elif self._name_db == "Электропитание":
+        elif self._name_db == "Power supply":
             vendors_list = ["APC", "Eaton", "CyberPower", "Vertiv", "Delta Electronics", "Powerware", "Socomec", "ABB", "Штиль", "SUA", "Топаз", "V&H", "Ippon", "Enatel", "Энергия"]
             vendors_list = sorted(vendors_list)
             wi_var = 155
