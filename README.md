@@ -44,7 +44,7 @@ The application is under development, so any comments will be taken into account
 
 Приложение находится в стадии разработки, поэтому любые замечания будут учеты автором и ваша обратная связь сильно поможет в улучшении проекта. Спасибо!
 
-# Images / Изображения
+# Images / Изображения:
 # <img width="1144" height="651" alt="image" src="https://github.com/user-attachments/assets/906e9989-d900-4af9-9001-a320c92b92d5" />
 # <img width="1141" height="648" alt="image" src="https://github.com/user-attachments/assets/46793403-8a0b-4cab-9bbf-dd0215b8323c" />
 # <img width="1148" height="655" alt="image" src="https://github.com/user-attachments/assets/49fbfa7a-08e1-4cca-9188-1d2b283408e2" />
