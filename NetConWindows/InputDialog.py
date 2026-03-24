@@ -1,6 +1,5 @@
 import tkinter
 import updated_ctk as ctk
-import keyboard
 import pyautogui
 from typing import Union, Tuple, Optional
 import re
