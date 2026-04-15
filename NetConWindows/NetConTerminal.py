@@ -815,7 +815,7 @@ class NetConTerminal(ctk.CTkToplevel):
                 if self.empty_help:  # новое: делал для есров но вроде работает везде тоже норм, это для вывода пустой справки, общей
                     self.send_command2("\r")
                     self.empty_help = False
-                if self.current_input.lstrip().startswith("sh") and self.con_type == "Telnet" and self.is_esr and not self.help_mode:
+                if self.current_input.lstrip().lower().startswith("sh") and self.con_type == "Telnet" and self.is_esr and not self.help_mode:
                     self.after(100)
                     self.send_command()
                     continue
@@ -1072,7 +1072,7 @@ class NetConTerminal(ctk.CTkToplevel):
             self.sum_line = ""
             self.current_input = self.input_entry.get().lstrip().rstrip()
             self.nullstring = "\r"
-            if ((("reset " in command.lower() or "delete " in command.lower() or "boot " in command.lower() or "erase " in command.lower() or ("wr" in command.lower() and " " in command.lower() and command.lower().startswith("wr")) or ("rel" in command.lower() and command.lower().startswith("rel")) or ("cop" in command.lower() and " " in command.lower() and command.lower().startswith("cop"))) and "(" not in self.current_name) or ("de" in command.lower() and command.lower().startswith("de") and "int" in command.lower() and " " in command.lower() and "(" in self.current_name)) and not command.lower().lstrip().startswith("sh") and not command.lower().startswith("disp"):  # Возможно будет дополняться
+            if ((("reset " in command.lower() or "delete " in command.lower() or "boot " in command.lower() or "erase " in command.lower() or ("wr" in command.lower() and " " in command.lower() and command.lower().startswith("wr")) or ("rel" in command.lower() and command.lower().startswith("rel")) or ("cop" in command.lower() and " " in command.lower() and command.lower().startswith("cop"))) and "(" not in self.current_name) or ("de" in command.lower() and command.lower().startswith("de") and "int" in command.lower() and " " in command.lower() and "(" in self.current_name)) and not command.lower().lstrip().lower().startswith("sh") and not command.lower().startswith("disp"):  # Возможно будет дополняться
                 self.clear_text(non_click=True)
                 self.after(100)
                 self.net_connect.write_channel(command.encode())
@@ -1112,7 +1112,7 @@ class NetConTerminal(ctk.CTkToplevel):
             self.tab_flag = False
             self.esr_show_mode = False
             #попробовать здесь в крысу сделать проверку на esr
-            if command.lstrip().startswith("sh") and len(command.split(" ")) == 2 and re.fullmatch(r"^[show? ]+$", command):
+            if command.lstrip().lower().startswith("sh") and len(command.split(" ")) == 2 and re.fullmatch(r"^[show? ]+$", command):
                 if not self.is_esr:
                     #if self.con_type == "Telnet":
                         #command = command + "\x03 \r"
@@ -1131,7 +1131,7 @@ class NetConTerminal(ctk.CTkToplevel):
             self.input_entry.configure(state="normal")
             self.input_entry.delete(0, "end")
             self.input_entry.configure(state="readonly")
-            if self.input_before_help.lstrip().startswith("sh") and self.is_esr and len(self.input_before_help.split(" ")) == 2 and re.fullmatch(r"^[show? ]+$", self.input_before_help):
+            if self.input_before_help.lstrip().lower().startswith("sh") and self.is_esr and len(self.input_before_help.split(" ")) == 2 and re.fullmatch(r"^[show? ]+$", self.input_before_help):
                 self.esr_show_mode = True
                 self.current_input = self.input_before_help
                 self.send_command()
