@@ -69,7 +69,7 @@ class SelectCon(ctk.CTkToplevel):
 
         self.label_1 = ctk.CTkLabel(master=self.frame_1, text="Cпособ подключения:", font=ctk.CTkFont(family="Trebuchet MS", size=14, weight="bold"))
         self.label_1.grid(row=1, column=1, columnspan=2, padx=(25, 25), pady=(10, 10), sticky="nsew")
-        self.optionemenu = ctk.CTkOptionMenu(self.frame_1, values=["Telnet", "Web", "SSH"], fg_color="#1F538D", width=128)
+        self.optionemenu = ctk.CTkOptionMenu(self.frame_1, values=["SSH", "Telnet", "Web"], fg_color="#1F538D", width=128)
         self.optionemenu.configure(font=ctk.CTkFont(family="Trebuchet MS", size=14, weight="bold"), anchor="center")
         self.optionemenu.grid(row=2, column=1,columnspan=2, padx=25, pady=(0, 25), sticky="nsew")
         self.bind("<Return>", lambda x: clicked(self.optionemenu.get(), ip_address))
