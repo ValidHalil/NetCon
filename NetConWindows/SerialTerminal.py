@@ -791,7 +791,7 @@ class SerialTerminal(ctk.CTkToplevel):
                 self.input_entry.insert("end", " ")
                 self.last_word = ""
                 added_word = added_word.split()
-                added_word = added_word[-1]
+                added_word = added_word[-1] + " "
             if final[len(final.rstrip()) - 1] not in continue_input:
                 self.input_entry.insert("end", added_word.replace("z1x1c", ""))
             else:
@@ -1024,10 +1024,7 @@ class SerialTerminal(ctk.CTkToplevel):
                             self.input_entry.configure(state="readonly")
                             self.unbind('<space>')
                         else:
-                            if not self.is_esr: #не точно
-                                self.after(100, lambda: [self.bind('<space>', lambda x: [self.send_command2(" " + "\r")]), self.bind('<KeyPress>', key_q), self.bind('<Control-KeyPress>', key_control_c)])
-                            else:
-                                self.after(100, lambda: [self.bind('<KeyPress>', key_q), self.bind('<Control-KeyPress>', key_control_c)])
+                            self.after(100, lambda: [self.bind('<space>', lambda x: [self.send_command2(" " + "\r")]), self.bind('<KeyPress>', key_q), self.bind('<Control-KeyPress>', key_control_c)])
                     else:
                         self.unbind('<space>')
                         self.unbind('<KeyPress>')
@@ -1082,7 +1079,8 @@ class SerialTerminal(ctk.CTkToplevel):
                             if self.tab_flag: # новое: типо фикс ошибок при табуляции? ломалось после неправильной комманды до таба и после справки
                                 self.special_string += line
                     if self.current_input.lstrip().lower().startswith("sh") and self.is_esr and not self.help_mode: # новое: теперь конфиг и все из шоу выводится непрерывно на есрах, ток так смог обойти проблемы с прерыванием вывода
-                        if self.current_name in line:
+                        self.after(100, lambda: [self.unbind('<KeyPress>'), self.unbind('<Control-KeyPress>'), self.unbind('<space>')])
+                        if self.current_name in line and ("ru" in self.current_input.lstrip().lower() or "in" in self.current_input.lstrip().lower() or "ca" in self.current_input.lstrip().lower()):
                             self.after(100, lambda: self.send_command2(" \r"))
                         else:
                             if "exit" not in line.lower():
