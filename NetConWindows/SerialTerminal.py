@@ -623,7 +623,7 @@ class SerialTerminal(ctk.CTkToplevel):
         self.nullstring = "\r"
         if self.serial_port and self.serial_port.is_open:
             try:
-                if ((("reset " in command.lower() or "delete " in command.lower() or "boot " in command.lower() or "erase " in command.lower() or ("wr" in command.lower() and " " in command.lower() and command.lower().startswith("wr")) or ("rel" in command.lower() and command.lower().startswith("rel")) or ("cop" in command.lower() and " " in command.lower() and command.lower().startswith("cop"))) and "(" not in self.current_name) or ("de" in command.lower() and command.lower().startswith("de") and "int" in command.lower() and " " in command.lower() and "(" in self.current_name)) and not command.lower().lstrip().startswith("sh") and not command.lower().startswith("disp"):  # Возможно будет дополняться
+                if ((("reset " in command.lower() or "delete " in command.lower() or "boot " in command.lower() or "erase " in command.lower() or ("wr" in command.lower() and " " in command.lower() and command.lower().startswith("wr")) or ("rel" in command.lower() and command.lower().startswith("rel")) or ("cop" in command.lower() and " " in command.lower() and command.lower().startswith("cop"))) and "(" not in self.current_name) or ("de" in command.lower() and command.lower().startswith("de") and "int" in command.lower() and " " in command.lower() and "(" in self.current_name)) and not command.lower().lstrip().lower().startswith("sh") and not command.lower().startswith("disp"):  # Возможно будет дополняться
                     self.clear_text(non_click=True)
                     self.serial_port.write(command.encode())
                     self.after(100)
@@ -984,9 +984,11 @@ class SerialTerminal(ctk.CTkToplevel):
                 if self.serial_port.in_waiting:
                     self.bind("<Tab>", self.on_tab_pressed)
                     line = self.serial_port.readline()
+                    linex=line
                     #print(line)
                     if b'[74D' in line or b'[80D' in line: #[74D # новое: детект есров
                         self.is_esr = True
+                        last_mode = "esr"
                     else:
                         self.is_esr = False
                     #print(self.is_esr)
@@ -1022,13 +1024,16 @@ class SerialTerminal(ctk.CTkToplevel):
                             self.input_entry.configure(state="readonly")
                             self.unbind('<space>')
                         else:
-                            self.after(100, lambda: [self.bind('<space>', lambda x: [self.send_command2(" " + "\r")]), self.bind('<KeyPress>', key_q), self.bind('<Control-KeyPress>', key_control_c)])
+                            if not self.is_esr: #не точно
+                                self.after(100, lambda: [self.bind('<space>', lambda x: [self.send_command2(" " + "\r")]), self.bind('<KeyPress>', key_q), self.bind('<Control-KeyPress>', key_control_c)])
+                            else:
+                                self.after(100, lambda: [self.bind('<KeyPress>', key_q), self.bind('<Control-KeyPress>', key_control_c)])
                     else:
                         self.unbind('<space>')
                         self.unbind('<KeyPress>')
                         self.unbind('<Control-KeyPress>')
                         if self.help_mode: # новое: доп стоп для есров
-                            if self.is_esr and self.input_before_help.lstrip().startswith("sh"): #пока спорно условие с sh
+                            if self.is_esr and self.input_before_help.lstrip().lower().startswith("sh"): #пока спорно условие с sh
                                 self.serial_port.write("\x03\r".encode())
                             self.input_entry.configure(state="readonly")
                         else:
@@ -1076,8 +1081,14 @@ class SerialTerminal(ctk.CTkToplevel):
                         else:
                             if self.tab_flag: # новое: типо фикс ошибок при табуляции? ломалось после неправильной комманды до таба и после справки
                                 self.special_string += line
-                    if self.current_input.lstrip().startswith("sh") and self.is_esr and not self.help_mode: # новое: теперь конфиг и все из шоу выводится непрерывно на есрах, ток так смог обойти проблемы с прерыванием вывода
-                        self.send_command2("\r")
+                    if self.current_input.lstrip().lower().startswith("sh") and self.is_esr and not self.help_mode: # новое: теперь конфиг и все из шоу выводится непрерывно на есрах, ток так смог обойти проблемы с прерыванием вывода
+                        if self.current_name in line:
+                            self.after(100, lambda: self.send_command2(" \r"))
+                        else:
+                            if "exit" not in line.lower():
+                                self.after(10, lambda: self.send_command2("\r"))
+                            else:
+                                self.after(100, lambda: self.send_command2("\r"))
                     if self.empty_help: # новое: делал для есров но вроде работает везде тоже норм, это для вывода пустой справки, общей
                         self.send_command2("\r")
                         self.empty_help = False
