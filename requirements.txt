@@ -4,3 +4,4 @@ netmiko
 psutil
 customtkinter
 keyboard
+win32clipboard
