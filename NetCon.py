@@ -4,6 +4,7 @@ import tkinter
 import pyautogui
 import updated_ctk as ctk
 from PIL import Image
+import win32clipboard
 import os
 import sqlite3
 import re
@@ -65,9 +66,14 @@ class App(ctk.CTk):
 
         def after_close_terminals():
             self.deiconify()
-            self.listbox = CTkListbox(self.tabview.tab("База адресов"), fg_color=("white", "#333333"), border_width=0, button_color=("#e5e5e5", "#212121"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="normal"), orientation="vertical", orientation2="horizontal", width=560)
-            self.listbox.grid(row=3, rowspan=6, column=2, columnspan=4, padx=(12, 20), pady=(0, 0), sticky="nsew")
-            self.listbox.bind('<<ListboxSelect>>', lambda list_var: open_con_listbox())
+            #self.listbox.destroy()
+            #self.listbox = CTkListbox(self.tabview.tab("База адресов"), fg_color=("white", "#333333"), border_width=0, button_color=("#e5e5e5", "#212121"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="normal"), orientation="vertical", orientation2="horizontal", width=560)
+            if self.listbox_hidden:
+                self.listbox.grid(row=2, rowspan=8, column=1, columnspan=7, padx=(20, 20), pady=(0, 20), sticky="nsew")
+            else:
+                self.listbox.grid(row=3, rowspan=6, column=2, columnspan=4, padx=(12, 20), pady=(0, 0), sticky="nsew")
+            #self.listbox.bind('<<ListboxSelect>>', lambda list_var: open_con_listbox())
+            #self.after(200, lambda: self.listbox.bind('<Enter>', lambda list_var2: outcolor_for_listbox()))
             self.hello_button_1.grid(row=5, column=1, padx=(520, 77), pady=(10, 0), sticky="we")
             self.label_hello.grid(row=2, column=1, padx=(115, 0), pady=(0, 0), sticky="w")
             self.label_hello2.grid(row=3, column=1, padx=(115, 0), pady=(10, 0), sticky="w")
@@ -96,14 +102,14 @@ class App(ctk.CTk):
                     self.bind('<Escape>', lambda close: self.close_app())
                     self.scaling_optionemenu.set(value="100%")
                     after_close_terminals()
-            elif str(x3.get()) == "...":
+            elif str(self.x3.get()) == "...":
                 self.entry3.focus_set()
                 if self.language == "Русский":
                     return CTkMessagebox(opacity=self.opacity, message='Поле не должно быть пустым!', title='Ошибка!', icon='cancel', master=self, button_width=self.alert_button_size)
                 else:
                     return CTkMessagebox(opacity=self.opacity, message='The field must not be empty!', title='Error!', icon='cancel', master=self, button_width=self.alert_button_size)
             else:
-                ip_var = str(x3.get())
+                ip_var = str(self.x3.get())
                 list_ip = ip_var.split(".")
                 for i in range(len(list_ip)):  # Проверка на верность формата IP
                     if str(list_ip[i]) == "":
@@ -121,7 +127,7 @@ class App(ctk.CTk):
                 if s_radio == 1:
                     self.after(150, lambda: self.focus_set())
                     select_terminal = SelectTerminal()
-                    select_terminal(self.appearance_mode_optionemenu.get(), str(x3.get()), "Telnet", self.scaling_optionemenu.get(), self, self.opacity, self.language)
+                    select_terminal(self.appearance_mode_optionemenu.get(), str(self.x3.get()), "Telnet", self.scaling_optionemenu.get(), self, self.opacity, self.language)
                     if select_terminal.get() == 1:
                         self.bind('<Escape>', lambda close: self.close_app())
                         self.scaling_optionemenu.set(value="100%")
@@ -129,7 +135,7 @@ class App(ctk.CTk):
                 elif s_radio == 2:
                     self.after(150, lambda: self.focus_set())
                     select_terminal = SelectTerminal()
-                    select_terminal(self.appearance_mode_optionemenu.get(), str(x3.get()), "SSH", self.scaling_optionemenu.get(), self, self.opacity, self.language)
+                    select_terminal(self.appearance_mode_optionemenu.get(), str(self.x3.get()), "SSH", self.scaling_optionemenu.get(), self, self.opacity, self.language)
                     if select_terminal.get() == 1:
                         self.bind('<Escape>', lambda close: self.close_app())
                         self.scaling_optionemenu.set(value="100%")
@@ -137,7 +143,7 @@ class App(ctk.CTk):
                 elif s_radio == 4:
                     self.after(150, lambda: self.focus_set())
                     web_con = SelectWeb()
-                    web_con(str(x3.get()), self, self.opacity, self.language)
+                    web_con(str(self.x3.get()), self, self.opacity, self.language)
                     if web_con.get() == 1:
                         self.bind('<Escape>', lambda close: self.close_app())
 
@@ -286,16 +292,16 @@ class App(ctk.CTk):
 
         # Параметры адаптера
         def execute_cmd4(command):
-            if str(x8.get()) == "" or str(x5.get()) == "..." or str(x6.get()) == "..." or str(x7.get()) == "...":
+            if str(x8.get()) == "" or str(self.x5.get()) == "..." or str(self.x6.get()) == "..." or str(self.x7.get()) == "...":
                 self.combobox_3.focus_set()
                 if self.language == "Русский":
                     return CTkMessagebox(opacity=self.opacity, message='Все поля должны быть заполнены!', title='Ошибка!', icon='cancel', master=self, button_width=self.alert_button_size)
                 else:
                     return CTkMessagebox(opacity=self.opacity, message='All fields must be filled in!', title='Error!', icon='cancel', master=self, button_width=self.alert_button_size)
             else:
-                ip_var = str(x5.get())
-                mask_var = str(x6.get())
-                gate_var = str(x7.get())
+                ip_var = str(self.x5.get())
+                mask_var = str(self.x6.get())
+                gate_var = str(self.x7.get())
                 list_ip = ip_var.split(".")
                 list_mask = mask_var.split(".")
                 list_gate = gate_var.split(".")
@@ -509,14 +515,14 @@ class App(ctk.CTk):
                 self.unbind("<KeyRelease-Control_L>")
                 #self.listbox.delete(0.0, 'end')
                 try:
-                    delete_items_in_batches(self.listbox, list(range(self.listbox.size())), self.listbox.size())
+                    self.delete_items_in_batches(self.listbox, list(range(self.listbox.size())), self.listbox.size())
                 except:
-                    delete_items_in_batches(self.listbox, list(range(self.listbox.size())), 1000)
+                    self.delete_items_in_batches(self.listbox, list(range(self.listbox.size())), 1000)
                 entry.configure(state="normal", border_color=("#979da2", "#565b5e"), button_color=("#979da2", "#565b5e"), command=lambda combo_var: combo_focus(entry, flag=1))
                 entry.bind("<Return>", lambda combobox_4_var: show_db(name_db, self.listbox))
                 self.main_button_6.configure(state="normal", fg_color="#1F538D")
                 self.help_btn_tab3.configure(command=lambda: help(self.tabview.get()))
-                self.clear_btn3.configure(command=lambda: [clear_text(self.listbox), clear_count()])
+                self.clear_btn3.configure(command=self.toggle_listbox)
                 if self.language == "Русский":
                     if self.alert_mode:
                         CTkMessagebox(opacity=self.opacity, message='Подключение закрыто!', title='Успех!', icon='check', master=self, button_width=self.alert_button_size)
@@ -537,8 +543,47 @@ class App(ctk.CTk):
                 # прыжок на некст 3 цифры
                 cursor_position = entry.index("insert")
                 index2 = ip[0][:cursor_position - 1].rfind(u".")
-                if cursor_position - index2 == 4:
+                if cursor_position - index2 == 4 and not self.backspace_flag:
                     entry.icursor(cursor_position + 1)
+
+        # Проверка на нажатие бекспейса
+        def key_backspace(event):
+            if event.keycode == 8:
+                self.backspace_flag = True
+            else:
+                self.backspace_flag = False
+
+        # Функция вставки из буфера в поля с трассировкой
+        def key_control_v(event, entry_name):
+            if event.keycode == 86:
+                win32clipboard.OpenClipboard()
+                data = win32clipboard.GetClipboardData()
+                win32clipboard.CloseClipboard()
+                if re.fullmatch(r"^[0-9.]+$", data):
+                    if entry_name == "ping":
+                        self.ip_entry_string_last_valid = [u"" + data]
+                        self.x.trace("w", lambda *args: entry_mask_check(self.x, [u"..." + data], self.entry1))
+                        self.x.set("")
+                    elif entry_name == "tracert":
+                        self.ip_entry_string_last_valid_trace = [u"" + data]
+                        self.x_tr.trace("w", lambda *args: entry_mask_check(self.x_tr, [u"..." + data], self.entry_tracert))
+                        self.x_tr.set("")
+                    elif entry_name == "connect":
+                        self.ip_entry_string_last_valid2 = [u"" + data]
+                        self.x3.trace("w", lambda *args: entry_mask_check(self.x3, [u"..." + data], self.entry3))
+                        self.x3.set("")
+                    elif entry_name == "ip":
+                        self.ip_entry_string_last_valid3 = [u"" + data]
+                        self.x5.trace("w", lambda *args: entry_mask_check(self.x5, [u"..." + data], self.entry6))
+                        self.x5.set("")
+                    elif entry_name == "mask":
+                        self.ip_entry_string_last_valid4 = [u"" + data]
+                        self.x6.trace("w", lambda *args: entry_mask_check(self.x6, [u"..." + data], self.entry7))
+                        self.x6.set("")
+                    elif entry_name == "gate":
+                        self.ip_entry_string_last_valid5 = [u"" + data]
+                        self.x7.trace("w", lambda *args: entry_mask_check(self.x7, [u"..." + data], self.entry8))
+                        self.x7.set("")
 
         # Функция подключения к БД и вывода из нее информации в listbox, также подсчет элементов в ней (ща мы бля выведем твою так называемую БАЗУУУ)
         def show_db(name, listbox):
@@ -566,14 +611,14 @@ class App(ctk.CTk):
             self.textbox3.delete(0.0, "end")
             # listbox.delete(0.0, "end")
             try:
-                delete_items_in_batches(self.listbox, list(range(self.listbox.size())), self.listbox.size())
+                self.delete_items_in_batches(self.listbox, list(range(self.listbox.size())), self.listbox.size())
             except:
-                delete_items_in_batches(self.listbox, list(range(self.listbox.size())), 1000)
+                self.delete_items_in_batches(self.listbox, list(range(self.listbox.size())), 1000)
             try:
                 with sqlite3.connect("db/" + self.name + ".db") as db:
                     cursor = db.cursor()
                     cursor.execute("""SELECT ip_address,name FROM net ORDER BY ip_address""")
-                    list2 = cursor.fetchall()
+                    self.list2 = cursor.fetchall()
                     cursor.execute('SELECT COUNT(*) FROM net')
                     self.total_users = cursor.fetchone()[0]
                     self.textbox3.configure(state="normal", border_color=("#979da2", "#565b5e"))
@@ -596,7 +641,7 @@ class App(ctk.CTk):
                     self.combobox_4.configure(state="readonly", command=lambda combo_var: combo_focus(self.combobox_4, flag=2))
                     self.main_button_6.configure(state="disabled", fg_color="#0f334d")
                     self.update_idletasks()
-                    self.insert_with_preview_async(list2)
+                    self.insert_with_preview_async(self.list2)
                     if self.tabview.get() != "База адресов":
                         nav_tab4()
                         self.unbind("<F5>")
@@ -649,7 +694,7 @@ class App(ctk.CTk):
 
         def back_states_and_binds_after_refresh():
             self.combobox_4.configure(state="readonly", border_color=("#979da2", "#565b5e"), button_color=("#979da2", "#565b5e"))
-            self.clear_btn3.configure(command=lambda: [clear_text(self.listbox), clear_count()])
+            self.clear_btn3.configure(command=self.toggle_listbox)
             self.help_btn_tab3.configure(command=lambda: help(self.tabview.get()))
             self.con_button.configure(state="normal", fg_color="#1F538D")
             self.update_button.configure(state="normal", fg_color="#1F538D")
@@ -674,15 +719,6 @@ class App(ctk.CTk):
                 self.unbind("<Control-Delete>")
             return self.after(180, lambda: [app.update(), app.update_idletasks()])  # пока спорно
 
-        # Оптимизация удаления (для более быстрой работы с базой, заебала эта красота, слишком медленно было)
-        def delete_items_in_batches(listbox, indices, batch_size):
-            """Удаляет элементы из Listbox партиями."""
-            for i in range(0, len(indices), batch_size):
-                batch = indices[i:i + batch_size]
-                for index in sorted(batch, reverse=True):  # Удаляем в обратном порядке, чтобы избежать смещения индексов
-                    listbox.delete(index)
-            self.listbox._parent_canvas.yview("moveto", 0)
-
         # Функция обновления БД (по сути повторный её вывод, но с другим уведомлением лол) (приколист)))))
         def refresh_db(name, listbox):
             check_db_eng_name(name)
@@ -703,15 +739,15 @@ class App(ctk.CTk):
             self.textbox3.delete(0.0, "end")
             # listbox.delete(0.0, "end")
             try:
-                delete_items_in_batches(self.listbox, list(range(self.listbox.size())), self.listbox.size())
+                self.delete_items_in_batches(self.listbox, list(range(self.listbox.size())), self.listbox.size())
             except:
-                delete_items_in_batches(self.listbox, list(range(self.listbox.size())), 1000)
+                self.delete_items_in_batches(self.listbox, list(range(self.listbox.size())), 1000)
             try:
                 with sqlite3.connect("db/" + self.name + ".db") as db:
                     cursor = db.cursor()
                     cursor.execute("""SELECT ip_address, name FROM net ORDER BY ip_address""")
-                    list2 = cursor.fetchall()
-                    self.insert_with_preview_async(list2)
+                    self.list2 = cursor.fetchall()
+                    self.insert_with_preview_async(self.list2)
                     cursor.execute('SELECT COUNT(*) FROM net')
                     self.total_users = cursor.fetchone()[0]
                     self.textbox3.insert('end', self.total_users)
@@ -755,8 +791,8 @@ class App(ctk.CTk):
                 with sqlite3.connect("db/" + self.name + ".db") as db:
                     cursor = db.cursor()
                     cursor.execute("""SELECT ip_address, name FROM net ORDER BY ip_address""")
-                    list2 = cursor.fetchall()
-                    self.insert_with_preview_async(list2)
+                    self.list2 = cursor.fetchall()
+                    self.insert_with_preview_async(self.list2)
                     cursor.execute('SELECT COUNT(*) FROM net')
                     self.total_users = cursor.fetchone()[0]
                     self.textbox3.insert('end', self.total_users)
@@ -793,15 +829,15 @@ class App(ctk.CTk):
             self.textbox3.delete(0.0, "end")
             # listbox.delete(0.0, "end")
             try:
-                delete_items_in_batches(self.listbox, list(range(self.listbox.size())), self.listbox.size())
+                self.delete_items_in_batches(self.listbox, list(range(self.listbox.size())), self.listbox.size())
             except:
-                delete_items_in_batches(self.listbox, list(range(self.listbox.size())), 1000)
+                self.delete_items_in_batches(self.listbox, list(range(self.listbox.size())), 1000)
             try:
                 with sqlite3.connect("db/" + self.name + ".db") as db:
                     cursor = db.cursor()
                     cursor.execute("""SELECT ip_address, name FROM net ORDER BY ip_address""")
-                    list2 = cursor.fetchall()
-                    self.insert_with_preview_async(list2)
+                    self.list2 = cursor.fetchall()
+                    self.insert_with_preview_async(self.list2)
                     cursor.execute('SELECT COUNT(*) FROM net')
                     self.total_users = cursor.fetchone()[0]
                     self.textbox3.insert('end', self.total_users)
@@ -853,15 +889,15 @@ class App(ctk.CTk):
             self.textbox3.delete(0.0, "end")
             # listbox.delete(0.0, "end")
             try:
-                delete_items_in_batches(self.listbox, list(range(self.listbox.size())), self.listbox.size())
+                self.delete_items_in_batches(self.listbox, list(range(self.listbox.size())), self.listbox.size())
             except:
-                delete_items_in_batches(self.listbox, list(range(self.listbox.size())), 1000)
+                self.delete_items_in_batches(self.listbox, list(range(self.listbox.size())), 1000)
             try:
                 with sqlite3.connect("db/" + self.name + ".db") as db:
                     cursor = db.cursor()
                     cursor.execute("""SELECT ip_address, name FROM net ORDER BY ip_address""")
-                    list2 = cursor.fetchall()
-                    self.insert_with_preview_async(list2)
+                    self.list2 = cursor.fetchall()
+                    self.insert_with_preview_async(self.list2)
                     cursor.execute('SELECT COUNT(*) FROM net')
                     self.total_users = cursor.fetchone()[0]
                     self.textbox3.insert('end', self.total_users)
@@ -933,11 +969,11 @@ class App(ctk.CTk):
                         self.textbox3.delete(0.0, "end")
                         # listbox.delete(0.0, "end")
                         try:
-                            delete_items_in_batches(self.listbox, list(range(self.listbox.size())), self.listbox.size())
+                            self.delete_items_in_batches(self.listbox, list(range(self.listbox.size())), self.listbox.size())
                         except:
-                            delete_items_in_batches(self.listbox, list(range(self.listbox.size())), 1000)
-                        list2 = cursor2.fetchall()
-                        self.insert_with_preview_async(list2)
+                            self.delete_items_in_batches(self.listbox, list(range(self.listbox.size())), 1000)
+                        self.list2 = cursor2.fetchall()
+                        self.insert_with_preview_async(self.list2)
                         cursor2.execute('SELECT COUNT(*) FROM net')
                         self.total_users = cursor2.fetchone()[0]
                         self.textbox3.insert('end', self.total_users)
@@ -1008,11 +1044,11 @@ class App(ctk.CTk):
                         self.textbox3.delete(0.0, "end")
                         # listbox.delete(0.0, "end")
                         try:
-                            delete_items_in_batches(self.listbox, list(range(self.listbox.size())), self.listbox.size())
+                            self.delete_items_in_batches(self.listbox, list(range(self.listbox.size())), self.listbox.size())
                         except:
-                            delete_items_in_batches(self.listbox, list(range(self.listbox.size())), 1000)
-                        list2 = cursor2.fetchall()
-                        self.insert_with_preview_async(list2)
+                            self.delete_items_in_batches(self.listbox, list(range(self.listbox.size())), 1000)
+                        self.list2 = cursor2.fetchall()
+                        self.insert_with_preview_async(self.list2)
                         cursor2.execute('SELECT COUNT(*) FROM net')
                         self.total_users = cursor2.fetchone()[0]
                         self.textbox3.insert('end', self.total_users)
@@ -1068,16 +1104,16 @@ class App(ctk.CTk):
                     cursor3.execute("""SELECT ip_address, name FROM net ORDER BY ip_address""")
                     # listbox.delete(0.0, "end")
                     try:
-                        delete_items_in_batches(self.listbox, list(range(self.listbox.size())), self.listbox.size())
+                        self.delete_items_in_batches(self.listbox, list(range(self.listbox.size())), self.listbox.size())
                     except:
-                        delete_items_in_batches(self.listbox, list(range(self.listbox.size())), 1000)
-                    list2 = cursor3.fetchall()
-                    for member in list2:
+                        self.delete_items_in_batches(self.listbox, list(range(self.listbox.size())), 1000)
+                    self.list2 = cursor3.fetchall()
+                    for member in self.list2:
                         #listbox.insert("END", member)
                         string = "".join(member)
                         ip_check, seps, name_check = string.partition(s)
                         if head == ip_check:
-                            m_index = list2.index(member)
+                            m_index = self.list2.index(member)
                             listbox.insert("END", member)
                             try:
                                 listbox.move_up(m_index)
@@ -1092,22 +1128,22 @@ class App(ctk.CTk):
                                 return CTkMessagebox(opacity=self.opacity, message='The device with this IP address is already in the database!', title='Error!', icon='cancel', master=self, button_width=self.alert_button_size), self.after(115, lambda: listbox.select(0))
                         #listbox.delete(0.0, "end")
                     try:
-                        delete_items_in_batches(self.listbox, list(range(self.listbox.size())), self.listbox.size())
+                        self.delete_items_in_batches(self.listbox, list(range(self.listbox.size())), self.listbox.size())
                     except:
-                        delete_items_in_batches(self.listbox, list(range(self.listbox.size())), 1000)
-                        # delete_items_in_batches(self.listbox, list(range(self.listbox.size())), self.listbox.size())
+                        self.delete_items_in_batches(self.listbox, list(range(self.listbox.size())), 1000)
+                        # self.delete_items_in_batches(self.listbox, list(range(self.listbox.size())), self.listbox.size())
                     cursor3.close()
                     query = 'INSERT INTO net (name,ip_address) VALUES (' + '" ' + tail + ' "' + "," + '"' + head + '"' + ")"
                     cursor.execute(query)
                     db.commit()
                     cursor2.execute("""SELECT ip_address, name FROM net ORDER BY ip_address""")
-                    list2 = cursor2.fetchall()
-                    self.insert_with_preview_async(list2)
-                    for member in list2:
+                    self.list2 = cursor2.fetchall()
+                    self.insert_with_preview_async(self.list2)
+                    for member in self.list2:
                         #listbox.insert("END", member)
                         string = "".join(member)
                         if s2 in string:
-                            m_index = list2.index(member)
+                            m_index = self.list2.index(member)
                             try:
                                 listbox.move_up(m_index)
                                 listbox.activate(0)
@@ -1188,25 +1224,25 @@ class App(ctk.CTk):
                         self.textbox3.delete(0.0, "end")
                         # listbox.delete(0.0, "end")
                         try:
-                            delete_items_in_batches(self.listbox, list(range(self.listbox.size())), self.listbox.size())
+                            self.delete_items_in_batches(self.listbox, list(range(self.listbox.size())), self.listbox.size())
                         except:
-                            delete_items_in_batches(self.listbox, list(range(self.listbox.size())), 1000)
+                            self.delete_items_in_batches(self.listbox, list(range(self.listbox.size())), 1000)
                         cursor = db.cursor()
                         cursor2 = db.cursor()
                         query = 'UPDATE net SET name = " ' + tail2 + ' ", ip_address = "' + head2 + '" WHERE ip_address = "' + head + '"'
                         #listbox.delete(0.0, "end")
-                        # delete_items_in_batches(self.listbox, list(range(self.listbox.size())), self.listbox.size())
+                        # self.delete_items_in_batches(self.listbox, list(range(self.listbox.size())), self.listbox.size())
                         cursor.execute(query)
                         db.commit()
                         cursor.close()
                         cursor2.execute("""SELECT ip_address, name FROM net ORDER BY ip_address""")
-                        list2 = cursor2.fetchall()
-                        self.insert_with_preview_async(list2)
-                        for member in list2:
+                        self.list2 = cursor2.fetchall()
+                        self.insert_with_preview_async(self.list2)
+                        for member in self.list2:
                             #listbox.insert("END", member)
                             string = "".join(member)
                             if ss2 in string:
-                                m_index = list2.index(member)
+                                m_index = self.list2.index(member)
                                 try:
                                     listbox.move_up(m_index)
                                     listbox.select(0)
@@ -1245,24 +1281,24 @@ class App(ctk.CTk):
                         self.textbox3.delete(0.0, "end")
                         # listbox.delete(0.0, "end")
                         try:
-                            delete_items_in_batches(self.listbox, list(range(self.listbox.size())), self.listbox.size())
+                            self.delete_items_in_batches(self.listbox, list(range(self.listbox.size())), self.listbox.size())
                         except:
-                            delete_items_in_batches(self.listbox, list(range(self.listbox.size())), 1000)
+                            self.delete_items_in_batches(self.listbox, list(range(self.listbox.size())), 1000)
                         cursor = db.cursor()
                         cursor2 = db.cursor()
                         cursor3 = db.cursor()
                         cursor3.execute("""SELECT ip_address, name FROM net ORDER BY ip_address""")
                         try:
-                            delete_items_in_batches(self.listbox, list(range(self.listbox.size())), self.listbox.size())
+                            self.delete_items_in_batches(self.listbox, list(range(self.listbox.size())), self.listbox.size())
                         except:
-                            delete_items_in_batches(self.listbox, list(range(self.listbox.size())), 1000)
-                        list2 = cursor3.fetchall()
-                        for member in list2:
+                            self.delete_items_in_batches(self.listbox, list(range(self.listbox.size())), 1000)
+                        self.list2 = cursor3.fetchall()
+                        for member in self.list2:
                             #listbox.insert("END", member)
                             string = " ".join(member)
                             ip_check, seps, name_check = string.partition(s)
                             if head2 == ip_check and head2 != head:
-                                m_index = list2.index(member)
+                                m_index = self.list2.index(member)
                                 listbox.insert("END", member)
                                 try:
                                     listbox.move_up(m_index)
@@ -1276,22 +1312,22 @@ class App(ctk.CTk):
                                 else:
                                     return CTkMessagebox(opacity=self.opacity, message='The device with this IP address is already in the database!', title='Error!', icon='cancel', master=self, button_width=self.alert_button_size), self.after(115, lambda: listbox.select(0))
                         try:
-                            delete_items_in_batches(self.listbox, list(range(self.listbox.size())), self.listbox.size())
+                            self.delete_items_in_batches(self.listbox, list(range(self.listbox.size())), self.listbox.size())
                         except:
-                            delete_items_in_batches(self.listbox, list(range(self.listbox.size())), 1000)
+                            self.delete_items_in_batches(self.listbox, list(range(self.listbox.size())), 1000)
                         cursor3.close()
                         query = 'UPDATE net SET name = " ' + tail2 + ' ", ip_address = "' + head2 + '" WHERE ip_address = "' + head + '"'
                         cursor.execute(query)
                         db.commit()
                         cursor.close()
                         cursor2.execute("""SELECT ip_address, name FROM net ORDER BY ip_address""")
-                        list2 = cursor2.fetchall()
-                        self.insert_with_preview_async(list2)
-                        for member in list2:
+                        self.list2 = cursor2.fetchall()
+                        self.insert_with_preview_async(self.list2)
+                        for member in self.list2:
                             #listbox.insert("END", member)
                             string = "".join(member)
                             if ss2 in string:
-                                m_index = list2.index(member)
+                                m_index = self.list2.index(member)
                                 try:
                                     listbox.move_up(m_index)
                                     listbox.select(0)
@@ -1364,18 +1400,19 @@ class App(ctk.CTk):
                 with sqlite3.connect("db/" + self.name + ".db") as db:
                     cursor = db.cursor()
                     cursor.execute("""SELECT ip_address, name FROM net ORDER BY ip_address""")
-                    list2 = cursor.fetchall()
+                    self.list2 = cursor.fetchall()
                     list3 = []
-                    for member in list2:
+                    for member in self.list2:
                         string = " ".join(member)
                         if item.lower() in string.lower():  # Регистр вышел нахуй
                             list3.append(member)
                     # listbox.delete(0.0, "end")
                     try:
-                        delete_items_in_batches(self.listbox, list(range(self.listbox.size())), self.listbox.size())
+                        self.delete_items_in_batches(self.listbox, list(range(self.listbox.size())), self.listbox.size())
                     except:
-                        delete_items_in_batches(self.listbox, list(range(self.listbox.size())), 1000)
+                        self.delete_items_in_batches(self.listbox, list(range(self.listbox.size())), 1000)
                     self.insert_with_preview_async(list3)
+                    self.list2 = list3
                     # На замену комменту ниже пока не точно
                     if listbox.get(0) == None:
                         return refresh_db_after_search(name_db, self.listbox), back_states_and_binds_after_refresh()
@@ -1619,7 +1656,7 @@ class App(ctk.CTk):
                 self.listbox.configure(multiple_selection=False)
                 self.del_button.configure(command=lambda: delete_item(name_db, self.listbox))
                 self.combobox_4.configure(state="readonly", border_color=("#979da2", "#565b5e"), button_color=("#979da2", "#565b5e"))
-                self.clear_btn3.configure(command=lambda: [clear_text(self.listbox), clear_count()])
+                self.clear_btn3.configure(command=self.toggle_listbox)
                 self.help_btn_tab3.configure(command=lambda: help(self.tabview.get()))
                 self.con_button.configure(state="normal", fg_color="#1F538D")
                 self.update_button.configure(state="normal", fg_color="#1F538D")
@@ -2077,9 +2114,18 @@ class App(ctk.CTk):
         # Скалинг эвент переехал короче, теперь при выборе скейла заново отрисовываем листобк (были проблемы с размером кнопок изза правок в классах CTkListBox и CTkScrollableFrame)
         def change_scaling_event(new_scaling):
             if new_scaling == "95%":
-                self.listbox = CTkListbox(self.tabview.tab("База адресов"), fg_color=("white", "#333333"), border_width=0, button_color=("#e5e5e5", "#212121"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="normal"), orientation="vertical", orientation2="horizontal", width=620)
-                self.listbox.grid(row=3, rowspan=6, column=2, columnspan=4, padx=(12, 20), pady=(0, 0), sticky="nsew")
-                self.listbox.bind('<<ListboxSelect>>', lambda list_var: open_con_listbox())
+                #self.listbox.destroy()
+                #self.listbox = CTkListbox(self.tabview.tab("База адресов"), fg_color=("white", "#333333"), border_width=0, button_color=("#e5e5e5", "#212121"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="normal"), orientation="vertical", orientation2="horizontal", width=620)
+                if self.listbox_hidden:
+                    self.listbox.configure(width=790)
+                    self.listbox.grid(row=2, rowspan=8, column=1, columnspan=7, padx=(20, 20), pady=(0, 20), sticky="nsew")
+                    self.help_btn_tab3.grid(row=1, column=7, padx=(0, 60), pady=(10, 5), sticky="e")
+                    self.clear_btn3.grid(row=1, column=7, padx=(96, 20), pady=(10, 5), sticky="nsew")
+                else:
+                    self.listbox.configure(width=620)
+                    self.listbox.grid(row=3, rowspan=6, column=2, columnspan=4, padx=(12, 20), pady=(0, 0), sticky="nsew")
+                #self.listbox.bind('<<ListboxSelect>>', lambda list_var: open_con_listbox())
+                #self.after(200, lambda: self.listbox.bind('<Enter>', lambda list_var2: outcolor_for_listbox()))
                 self.label_hello.grid(row=2, column=1, padx=(145, 0), pady=(0, 0), sticky="w")
                 self.label_hello2.grid(row=3, column=1, padx=(145, 0), pady=(10, 0), sticky="w")
                 self.label_hello3.grid(row=4, column=1, padx=(145, 0), pady=(10, 0), sticky="w")
@@ -2098,9 +2144,18 @@ class App(ctk.CTk):
                 self.alert_button_size = 150
                 self.settings_frame_height = 382.5
             elif new_scaling == "105%":
-                self.listbox = CTkListbox(self.tabview.tab("База адресов"), fg_color=("white", "#333333"), border_width=0, button_color=("#e5e5e5", "#212121"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="normal"), orientation="vertical", orientation2="horizontal", width=515)
-                self.listbox.grid(row=3, rowspan=6, column=2, columnspan=4, padx=(12, 20), pady=(0, 0), sticky="nsew")
-                self.listbox.bind('<<ListboxSelect>>', lambda list_var: open_con_listbox())
+                #self.listbox.destroy()
+                #self.listbox = CTkListbox(self.tabview.tab("База адресов"), fg_color=("white", "#333333"), border_width=0, button_color=("#e5e5e5", "#212121"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="normal"), orientation="vertical", orientation2="horizontal", width=515)
+                if self.listbox_hidden:
+                    self.listbox.configure(width=685)
+                    self.listbox.grid(row=2, rowspan=8, column=1, columnspan=7, padx=(20, 20), pady=(0, 20), sticky="nsew")
+                    self.help_btn_tab3.grid(row=1, column=7, padx=(0, 57), pady=(10, 5), sticky="e")
+                    self.clear_btn3.grid(row=1, column=7, padx=(76, 20), pady=(10, 5), sticky="nsew")
+                else:
+                    self.listbox.configure(width=512)
+                    self.listbox.grid(row=3, rowspan=6, column=2, columnspan=4, padx=(12, 20), pady=(0, 0), sticky="nsew")
+                #self.listbox.bind('<<ListboxSelect>>', lambda list_var: open_con_listbox())
+                #self.after(200, lambda: self.listbox.bind('<Enter>', lambda list_var2: outcolor_for_listbox()))
                 self.label_hello.grid(row=2, column=1, padx=(95, 0), pady=(0, 0), sticky="w")
                 self.label_hello2.grid(row=3, column=1, padx=(95, 0), pady=(10, 0), sticky="w")
                 self.label_hello3.grid(row=4, column=1, padx=(95, 0), pady=(10, 0), sticky="w")
@@ -2119,9 +2174,18 @@ class App(ctk.CTk):
                 self.alert_button_size = 135
                 self.settings_frame_height = 372
             else:
-                self.listbox = CTkListbox(self.tabview.tab("База адресов"), fg_color=("white", "#333333"), border_width=0, button_color=("#e5e5e5", "#212121"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="normal"), orientation="vertical", orientation2="horizontal", width=560)
-                self.listbox.grid(row=3, rowspan=6, column=2, columnspan=4, padx=(12, 20), pady=(0, 0), sticky="nsew")
-                self.listbox.bind('<<ListboxSelect>>', lambda list_var: open_con_listbox())
+                #self.listbox.destroy()
+                #self.listbox = CTkListbox(self.tabview.tab("База адресов"), fg_color=("white", "#333333"), border_width=0, button_color=("#e5e5e5", "#212121"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="normal"), orientation="vertical", orientation2="horizontal", width=560)
+                if self.listbox_hidden:
+                    self.listbox.configure(width=735)
+                    self.listbox.grid(row=2, rowspan=8, column=1, columnspan=7, padx=(20, 20), pady=(0, 20), sticky="nsew")
+                    self.help_btn_tab3.grid(row=1, column=7, padx=(0, 60), pady=(10, 5), sticky="e")
+                    self.clear_btn3.grid(row=1, column=7, padx=(85, 20), pady=(10, 5), sticky="nsew")
+                else:
+                    self.listbox.configure(width=560)
+                    self.listbox.grid(row=3, rowspan=6, column=2, columnspan=4, padx=(12, 20), pady=(0, 0), sticky="nsew")
+                #self.listbox.bind('<<ListboxSelect>>', lambda list_var: open_con_listbox())
+                #self.after(200, lambda: self.listbox.bind('<Enter>', lambda list_var2: outcolor_for_listbox()))
                 self.hello_button_1.grid(row=5, column=1, padx=(520, 77), pady=(10, 0), sticky="we")
                 self.label_hello.grid(row=2, column=1, padx=(115, 0), pady=(0, 0), sticky="w")
                 self.label_hello2.grid(row=3, column=1, padx=(115, 0), pady=(10, 0), sticky="w")
@@ -2483,15 +2547,20 @@ class App(ctk.CTk):
 
         # Функция позволяюща юзать вставку и копирование на русской раскладке
         def _onKeyRelease(event):
-            ctrl = (event.state & 0x4) != 0
-            if event.keycode == 88 and ctrl and event.keysym.lower() != "x":
-                event.widget.event_generate("<<Cut>>")
-            if event.keycode == 86 and ctrl and event.keysym.lower() != "v":
-                event.widget.event_generate("<<Paste>>")
-            if event.keycode == 67 and ctrl and event.keysym.lower() != "c":
-                event.widget.event_generate("<<Copy>>")
-            if event.keycode == 65 and ctrl and event.keysym.lower() != "a":
-                event.widget.event_generate("<<SelectAll>>")
+            if self.v_trigger:
+                #print(self.v_trigger)
+                return
+            else:
+                #print(self.v_trigger)
+                ctrl = (event.state & 0x4) != 0
+                if event.keycode == 88 and ctrl and event.keysym.lower() != "x":
+                    event.widget.event_generate("<<Cut>>")
+                if event.keycode == 86 and ctrl and event.keysym.lower() != "v":
+                    event.widget.event_generate("<<Paste>>")
+                if event.keycode == 67 and ctrl and event.keysym.lower() != "c":
+                    event.widget.event_generate("<<Copy>>")
+                if event.keycode == 65 and ctrl and event.keysym.lower() != "a":
+                    event.widget.event_generate("<<SelectAll>>")
 
         # Получение списка адаптеров (теперь реалтайм)
         # При вызове выпадающего списка на стрелку вниз
@@ -2531,7 +2600,9 @@ class App(ctk.CTk):
         self.opacity = 1
         self.language = ""
         self.last_arrow = ""
+        self.v_trigger = False
         self.name = ""
+        self.backspace_flag = False
         self.total_users = 0
         self.settings_frame_height = 0
         self.alert_button_size = 145
@@ -2740,12 +2811,14 @@ class App(ctk.CTk):
         self.tabview.tab("Подключение").grid_columnconfigure((2), weight=1)
         self.tabview.tab("Подключение").grid_rowconfigure((5), weight=1)
 
-        x = tkinter.StringVar()
-        x_tr = tkinter.StringVar()
-        x3 = tkinter.StringVar()
+        self.x = tkinter.StringVar()
+        self.x_tr = tkinter.StringVar()
+        self.x3 = tkinter.StringVar()
 
         clear_img = ctk.CTkImage(dark_image=Image.open(path_img + "img/clear.png"), size=(20, 20))
         cleartext_img = ctk.CTkImage(dark_image=Image.open(path_img + "img/cleartext.png"), size=(18, 18))
+        self.more_img = ctk.CTkImage(dark_image=Image.open(path_img + "img/more.png"), size=(18, 18))
+        self.less_img = ctk.CTkImage(dark_image=Image.open(path_img + "img/less.png"), size=(18, 18))
         help_img = ctk.CTkImage(dark_image=Image.open(path_img + "img/help.png"), size=(37, 18))
         help_eng_img = ctk.CTkImage(dark_image=Image.open(path_img + "img/help_eng.png"), size=(37, 15))
         consolelog_img = ctk.CTkImage(dark_image=Image.open(path_img + "img/consolelog.png"), size=(75, 18))
@@ -2756,25 +2829,27 @@ class App(ctk.CTk):
         self.label1.grid(row=1, column=1, padx=(50, 0), pady=(30, 5), sticky="w")
         self.ping_label_img = ctk.CTkLabel(self.tabview.tab("Подключение"), image=ping_img, text="")
         self.ping_label_img.grid(row=1, column=1, padx=(18, 0), pady=(30, 5), sticky="w")
-        self.entry1 = ctk.CTkEntry(self.tabview.tab("Подключение"), textvariable=x, font=ctk.CTkFont(family="Trebuchet MS", size=13, weight="bold"))
-        self.entry1.grid(row=1, column=1, columnspan=5, padx=(145, 89), pady=(30, 5), sticky="nsew")
-        self.entry1.bind("<Return>", lambda entry1_var: execute_cmd(str(x.get()), self.combobox_ping.get(), self.entry1))
+        self.entry1 = ctk.CTkEntry(self.tabview.tab("Подключение"), textvariable=self.x, font=ctk.CTkFont(family="Trebuchet MS", size=13, weight="bold"))
+        self.entry1.grid(row=1, column=1, columnspan=5, padx=(140, 99), pady=(30, 5), sticky="nsew")
+        self.entry1.bind("<Return>", lambda entry1_var: execute_cmd(str(self.x.get()), self.combobox_ping.get(), self.entry1))
         self.entry1.bind("<Button-1>", lambda into_entry: left_click(self.entry1))
         self.entry1.bind("<Down>", lambda open_var: [self.combobox_ping._clicked(), self.after(50, lambda: self.entry1.focus_set())])
         self.entry1.bind("<Delete>", lambda del_var: clear_entry_ip(self.entry1, self.combobox_ping))
         self.entry1.bind("<FocusIn>", lambda focus_on: self.after(70, lambda: [self.unbind("<Down>"), self.unbind("<Up>"), self.bind('<Escape>', lambda escape_entry: right_click())]))
         self.entry1.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: self.close_app()), self.after(50, lambda: self.bind("<Down>", lambda next: self.textbox.yview_scroll(1, "units"))), self.after(50, lambda: self.bind("<Up>", lambda next: self.textbox.yview_scroll(-1, "units")))] if self.tabview.get() == "Подключение" else print("sss"))
+        self.entry1.bind('<Control-KeyPress>',lambda event, entry_name = "ping": key_control_v(event, entry_name))
+        self.entry1.bind('<KeyPress>', key_backspace)
 
         self.combobox_ping = ctk.CTkComboBox(self.tabview.tab("Подключение"), values=["None", "/t", "/a", "win", "/t win", "/a win"], width=80, justify="c", state="readonly", font=ctk.CTkFont(family="Trebuchet MS", size=13, weight="bold"))
-        self.combobox_ping.grid(row=1, column=5, columnspan=1, padx=(0, 0), pady=(30, 5), sticky="nsew")
+        self.combobox_ping.grid(row=1, column=5, padx=(60, 10), pady=(30, 5), sticky="nsew")
         self.combobox_ping.set(value="None")
         self.combobox_ping.bind("<Down>", lambda open_var: self.combobox_ping._clicked())
         self.combobox_ping.bind("<FocusIn>", lambda focus_on: self.after(100, lambda: [self.unbind("<Down>"), self.unbind("<Up>"), self.bind('<Escape>', lambda escape_entry: right_click())]))
         self.combobox_ping.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: self.close_app()), self.after(50, lambda: self.bind("<Down>", lambda next: self.textbox.yview_scroll(1, "units"))), self.after(50, lambda: self.bind("<Up>", lambda next: self.textbox.yview_scroll(-1, "units")))] if self.tabview.get() == "Подключение" else print("sss"))
-        self.combobox_ping.bind("<Return>", lambda entry1_var: execute_cmd(str(x.get()), self.combobox_ping.get(), self.entry1))
+        self.combobox_ping.bind("<Return>", lambda entry1_var: execute_cmd(str(self.x.get()), self.combobox_ping.get(), self.entry1))
 
-        self.main_button_1 = ctk.CTkButtonSoftHover(master=self.tabview.tab("Подключение"), normal_color="#1F538D", fg_color="#1F538D", hover=False, is_disabled=True, border_width=0, text_color=("white", "#DCE4EE"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="bold"), text="Начать", command=lambda: execute_cmd(str(x.get()), self.combobox_ping.get(), self.entry1))
-        self.main_button_1.grid(row=1, column=6, padx=(20, 10), pady=(30, 5), sticky="nsew")
+        self.main_button_1 = ctk.CTkButtonSoftHover(master=self.tabview.tab("Подключение"), normal_color="#1F538D", fg_color="#1F538D", hover=False, is_disabled=True, border_width=0, text_color=("white", "#DCE4EE"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="bold"), text="Начать", command=lambda: execute_cmd(str(self.x.get()), self.combobox_ping.get(), self.entry1))
+        self.main_button_1.grid(row=1, column=6, padx=(0, 10), pady=(30, 5), sticky="nsew")
         self.main_button_1.bind("<Enter>", lambda go_hover: [self.anim_hover.animate_hover(self.main_button_1, int("1f538d", 16), int("0f334d", 16), int("10204", 16), 10, "down")])  # print("IN")
         self.main_button_1._text_label.bind("<Enter>", lambda var_in: self.anim_hover.stop_leave(self.main_button_1))
         self.main_button_1._text_label.bind("<Leave>", lambda var_out: self.anim_hover.go_leave(self.main_button_1, "1f538d", "0f334d", "10204"))
@@ -2787,33 +2862,35 @@ class App(ctk.CTk):
         self.clear_btn_ip._image_label.bind("<Leave>", lambda var_out: self.anim_hover.go_leave(self.clear_btn_ip, "f4740b", "94440B", "60300"))
         self.anim_hover.init_hover_state(self.clear_btn_ip)
 
-        ip_entry_string_last_valid = [u"..."]
-        x.trace("w", lambda *args: entry_mask_check(x, ip_entry_string_last_valid, self.entry1))
-        x.set("")
+        self.ip_entry_string_last_valid = [u"..."]
+        self.x.trace("w", lambda *args: entry_mask_check(self.x, self.ip_entry_string_last_valid, self.entry1))
+        self.x.set("")
 
         self.label2 = ctk.CTkLabel(self.tabview.tab("Подключение"), text="Tracert:", font=ctk.CTkFont(family="Trebuchet MS", size=20, weight="bold"))
         self.label2.grid(row=2, column=1, padx=(50, 0), pady=(10, 20), sticky="w")
         self.tracert_label_img = ctk.CTkLabel(self.tabview.tab("Подключение"), image=tracert_img, text="")
         self.tracert_label_img.grid(row=2, column=1, padx=(18, 0), pady=(10, 20), sticky="w")
-        self.entry_tracert = ctk.CTkEntry(self.tabview.tab("Подключение"), textvariable=x_tr, font=ctk.CTkFont(family="Trebuchet MS", size=13, weight="bold"))
-        self.entry_tracert.grid(row=2, column=1, columnspan=5, padx=(145, 89), pady=(10, 20), sticky="nsew")
-        self.entry_tracert.bind("<Return>", lambda entry_tracert_var: execute_cmd(str(x_tr.get()), self.combobox_tracert.get(), self.entry_tracert))
+        self.entry_tracert = ctk.CTkEntry(self.tabview.tab("Подключение"), textvariable=self.x_tr, font=ctk.CTkFont(family="Trebuchet MS", size=13, weight="bold"))
+        self.entry_tracert.grid(row=2, column=1, columnspan=5, padx=(140, 99), pady=(10, 20), sticky="nsew")
+        self.entry_tracert.bind("<Return>", lambda entry_tracert_var: execute_cmd(str(self.x_tr.get()), self.combobox_tracert.get(), self.entry_tracert))
         self.entry_tracert.bind("<Button-1>", lambda into_entry: left_click(self.entry_tracert))
         self.entry_tracert.bind("<Down>", lambda open_var: [self.combobox_tracert._clicked(), self.after(50, lambda: self.entry_tracert.focus_set())])
         self.entry_tracert.bind("<Delete>", lambda del_var: clear_entry_ip(self.entry_tracert, self.combobox_tracert))
         self.entry_tracert.bind("<FocusIn>", lambda focus_on: self.after(100, lambda: [self.unbind("<Down>"), self.unbind("<Up>"), self.bind('<Escape>', lambda escape_entry: right_click())]))
         self.entry_tracert.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: self.close_app()), self.after(50, lambda: self.bind("<Down>", lambda next: self.textbox.yview_scroll(1, "units"))), self.after(50, lambda: self.bind("<Up>", lambda next: self.textbox.yview_scroll(-1, "units")))] if self.tabview.get() == "Подключение" else print("sss"))
+        self.entry_tracert.bind('<Control-KeyPress>',lambda event, entry_name = "tracert": key_control_v(event, entry_name))
+        self.entry_tracert.bind('<KeyPress>', key_backspace)
 
         self.combobox_tracert = ctk.CTkComboBox(self.tabview.tab("Подключение"), values=[" None ", "/d", "/j", " win ", "/d win", "/j win"], width=80, justify="c", state="readonly", font=ctk.CTkFont(family="Trebuchet MS", size=13, weight="bold"))
-        self.combobox_tracert.grid(row=2, column=5, padx=(0, 0), pady=(10, 20), sticky="nsew")
+        self.combobox_tracert.grid(row=2, column=5, padx=(60, 10), pady=(10, 20), sticky="nsew")
         self.combobox_tracert.set(value=" None ")
         self.combobox_tracert.bind("<Down>", lambda open_var: self.combobox_tracert._clicked())
         self.combobox_tracert.bind("<FocusIn>", lambda focus_on: self.after(70, lambda: [self.unbind("<Down>"), self.unbind("<Up>"), self.bind('<Escape>', lambda escape_entry: right_click())]))
         self.combobox_tracert.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: self.close_app()), self.after(50, lambda: self.bind("<Down>", lambda next: self.textbox.yview_scroll(1, "units"))), self.after(50, lambda: self.bind("<Up>", lambda next: self.textbox.yview_scroll(-1, "units")))] if self.tabview.get() == "Подключение" else print("sss"))
-        self.combobox_tracert.bind("<Return>", lambda entry_tracert_var: execute_cmd(str(x_tr.get()), self.combobox_tracert.get(), self.entry_tracert))
+        self.combobox_tracert.bind("<Return>", lambda entry_tracert_var: execute_cmd(str(self.x_tr.get()), self.combobox_tracert.get(), self.entry_tracert))
 
-        self.main_button_2 = ctk.CTkButtonSoftHover(master=self.tabview.tab("Подключение"), normal_color="#1F538D", fg_color="#1F538D", border_width=0, hover=False, is_disabled=True, text_color=("white", "#DCE4EE"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="bold"), text="Начать", command=lambda: execute_cmd(str(x_tr.get()), self.combobox_tracert.get(), self.entry_tracert))
-        self.main_button_2.grid(row=2, column=6, padx=(20, 10), pady=(10, 20), sticky="nsew")
+        self.main_button_2 = ctk.CTkButtonSoftHover(master=self.tabview.tab("Подключение"), normal_color="#1F538D", fg_color="#1F538D", border_width=0, hover=False, is_disabled=True, text_color=("white", "#DCE4EE"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="bold"), text="Начать", command=lambda: execute_cmd(str(self.x_tr.get()), self.combobox_tracert.get(), self.entry_tracert))
+        self.main_button_2.grid(row=2, column=6, padx=(0, 10), pady=(10, 20), sticky="nsew")
         self.main_button_2.bind("<Enter>", lambda go_hover: [self.anim_hover.animate_hover(self.main_button_2, int("1f538d", 16), int("0f334d", 16), int("10204", 16), 10, "down")])  # print("IN")
         self.main_button_2._text_label.bind("<Enter>", lambda var_in: self.anim_hover.stop_leave(self.main_button_2))
         self.main_button_2._text_label.bind("<Leave>", lambda var_out: self.anim_hover.go_leave(self.main_button_2, "1f538d", "0f334d", "10204"))
@@ -2826,16 +2903,16 @@ class App(ctk.CTk):
         self.clear_btn_tracert._image_label.bind("<Leave>", lambda var_out: self.anim_hover.go_leave(self.clear_btn_tracert, "f4740b", "94440B", "60300"))
         self.anim_hover.init_hover_state(self.clear_btn_tracert)
 
-        ip_entry_string_last_valid_trace = [u"..."]
-        x_tr.trace("w", lambda *args: entry_mask_check(x_tr, ip_entry_string_last_valid_trace, self.entry_tracert))
-        x_tr.set("")
+        self.ip_entry_string_last_valid_trace = [u"..."]
+        self.x_tr.trace("w", lambda *args: entry_mask_check(self.x_tr, self.ip_entry_string_last_valid_trace, self.entry_tracert))
+        self.x_tr.set("")
 
         self.label_con = ctk.CTkLabel(self.tabview.tab("Подключение"), text="", image=consolelog_img, font=ctk.CTkFont(size=11, weight="bold"))
         self.label_con.grid(row=3, column=1, padx=20, pady=(0, 4), sticky="w")
         self.help_btn_tab1 = ctk.CTkButtonSoftHover(master=self.tabview.tab("Подключение"), width=20, text_color="gray32", hover=False, border_width=0, image=help_img, text="", font=ctk.CTkFont(size=11, weight="bold"), command=lambda: help(self.tabview.get()))
-        self.help_btn_tab1.grid(row=3, column=6, padx=(0, 0), pady=(0, 5), sticky="e")
+        self.help_btn_tab1.grid(row=3, column=6, padx=(0, 3), pady=(0, 5), sticky="e")
         self.clear_btn = ctk.CTkButtonSoftHover(master=self.tabview.tab("Подключение"), width=20, hover=False, text="", image=cleartext_img, border_width=0, command=lambda: clear_text(self.textbox))
-        self.clear_btn.grid(row=3, column=7, padx=(0, 20), pady=(0, 5), sticky="e")
+        self.clear_btn.grid(row=3, column=7, padx=(0, 20), pady=(0, 5), sticky="nsew")
         self.textbox = ctk.CTkTextbox(self.tabview.tab("Подключение"), width=250, state="disabled")
         self.textbox.grid(row=4, rowspan=2, column=1, columnspan=7, padx=(20, 20), pady=(0, 13), sticky="nsew")
 
@@ -2846,31 +2923,34 @@ class App(ctk.CTk):
         self.label3.grid(row=7, column=1, padx=(50, 0), pady=(15, 30), sticky="w")
         self.tel_label_img = ctk.CTkLabel(self.tabview.tab("Подключение"), image=telnet_img, text="")
         self.tel_label_img.grid(row=7, column=1, padx=(18, 0), pady=(15, 30), sticky="w")
-        self.entry3 = ctk.CTkEntry(self.tabview.tab("Подключение"), textvariable=x3, font=ctk.CTkFont(family="Trebuchet MS", size=13, weight="bold"))
-        self.entry3.grid(row=7, column=2, columnspan=3, padx=(18, 92), pady=(15, 30), sticky="ew")
+        self.entry3 = ctk.CTkEntry(self.tabview.tab("Подключение"), textvariable=self.x3, font=ctk.CTkFont(family="Trebuchet MS", size=13, weight="bold"))
+        self.entry3.grid(row=7, column=2, padx=(12, 15), pady=(15, 30), sticky="ew")
         self.entry3.bind("<Return>", lambda entry3_var: clicked2(self.radio_var))
         self.entry3.bind("<Button-1>", lambda into_entry: left_click(self.entry3))
         self.entry3.bind("<Delete>", lambda del_var: clear_entry_telnet(self.entry3, self.radio_var))
         self.entry3.bind("<FocusIn>", lambda focus_on: self.after(100, lambda: [self.unbind("<Down>"), self.unbind("<Up>"), self.bind('<Escape>', lambda escape_entry: right_click())] if self.tabview.get() == "Подключение" else print("sss")))
         self.entry3.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: self.close_app()), self.after(50, lambda: self.bind("<Down>", lambda next: self.textbox.yview_scroll(1, "units"))), self.after(50, lambda: self.bind("<Up>", lambda next: self.textbox.yview_scroll(-1, "units")))] if self.tabview.get() == "Подключение" else print("sss"))
-        ip_entry_string_last_valid2 = [u"..."]
-        x3.trace("w", lambda *args: entry_mask_check(x3, ip_entry_string_last_valid2, self.entry3))
-        x3.set("")
+        self.entry3.bind('<Control-KeyPress>', lambda event, entry_name = "connect": key_control_v(event, entry_name))
+        self.entry3.bind('<KeyPress>', key_backspace)
+
+        self.ip_entry_string_last_valid2 = [u"..."]
+        self.x3.trace("w", lambda *args: entry_mask_check(self.x3, self.ip_entry_string_last_valid2, self.entry3))
+        self.x3.set("")
 
         self.radio_var = tkinter.IntVar(value=1)
         self.radio_button_1 = ctk.CTkRadioButton(master=self.tabview.tab("Подключение"), text="Telnet", variable=self.radio_var, value=1, width=5, font=ctk.CTkFont(family="Trebuchet MS", size=13, weight="bold"), command=lambda: self.entry3.configure(state="normal", border_color=("#979da2", "#565b5e"), text_color=("gray14", "gray84")))
-        self.radio_button_1.grid(row=7, column=4, pady=(4, 0), padx=(0, 0), sticky="new")
+        self.radio_button_1.grid(row=7, column=5, pady=(4, 0), padx=(0, 0), sticky="new")
         self.radio_button_3 = ctk.CTkRadioButton(master=self.tabview.tab("Подключение"), text="SSH", variable=self.radio_var, value=2, width=5, font=ctk.CTkFont(family="Trebuchet MS", size=13, weight="bold"), command=lambda: self.entry3.configure(state="normal", border_color=("#979da2", "#565b5e"), text_color=("gray14", "gray84")))
-        self.radio_button_3.grid(row=7, column=5, pady=(4, 0), padx=(20, 0), sticky="new")
+        self.radio_button_3.grid(row=7, column=5, pady=(4, 0), padx=(80, 15), sticky="new")
         self.radio_button_4 = ctk.CTkRadioButton(master=self.tabview.tab("Подключение"), text="Serial", variable=self.radio_var, value=3, width=5, font=ctk.CTkFont(family="Trebuchet MS", size=13, weight="bold"), command=lambda: self.entry3.configure(state="disabled", border_color=("#8f8f8f", "#444444"), text_color=("gray50", "gray45")))
-        self.radio_button_4.grid(row=7, column=4, pady=(0, 19), padx=(0, 0), sticky="sew")
+        self.radio_button_4.grid(row=7, column=5, pady=(0, 19), padx=(0, 0), sticky="sew")
         self.radio_button_2 = ctk.CTkRadioButton(master=self.tabview.tab("Подключение"), text="Web", variable=self.radio_var, value=4, width=5, font=ctk.CTkFont(family="Trebuchet MS", size=13, weight="bold"), command=lambda: self.entry3.configure(state="normal", border_color=("#979da2", "#565b5e"), text_color=("gray14", "gray84")))
-        self.radio_button_2.grid(row=7, column=5, pady=(0, 19), padx=(20, 0), sticky="sew")
+        self.radio_button_2.grid(row=7, column=5, pady=(0, 19), padx=(80, 15), sticky="sew")
         self.entry3.bind('<Down>', lambda sex: next_radio(self.radio_var))
         self.entry3.bind('<Up>', lambda sex: prev_radio(self.radio_var))
 
         self.main_button_3 = ctk.CTkButtonSoftHover(master=self.tabview.tab("Подключение"), normal_color="#1F538D", fg_color="#1F538D", hover=False, border_width=0, text_color=("white", "#DCE4EE"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="bold"), text="Открыть", command=lambda: clicked2(self.radio_var))
-        self.main_button_3.grid(row=7, column=6, padx=(20, 10), pady=(15, 30), sticky="ew")
+        self.main_button_3.grid(row=7, column=6, padx=(0, 10), pady=(15, 30), sticky="ew")
         self.main_button_3.bind("<Enter>", lambda go_hover: [self.anim_hover.animate_hover(self.main_button_3, int("1f538d", 16), int("0f334d", 16), int("10204", 16), 10, "down")])  # print("IN")
         self.main_button_3._text_label.bind("<Enter>", lambda var_in: self.anim_hover.stop_leave(self.main_button_3))
         self.main_button_3._text_label.bind("<Leave>", lambda var_out: self.anim_hover.go_leave(self.main_button_3, "1f538d", "0f334d", "10204"))
@@ -2887,9 +2967,9 @@ class App(ctk.CTk):
 
         x2 = tkinter.StringVar()
         x4 = tkinter.StringVar()
-        x5 = tkinter.StringVar()
-        x6 = tkinter.StringVar()
-        x7 = tkinter.StringVar()
+        self.x5 = tkinter.StringVar()
+        self.x6 = tkinter.StringVar()
+        self.x7 = tkinter.StringVar()
         x8 = tkinter.StringVar()
 
         self.tabview.tab("Параметры сети").grid_columnconfigure((1, 2, 3), weight=0)
@@ -2902,7 +2982,7 @@ class App(ctk.CTk):
         self.ipconfig_label_img = ctk.CTkLabel(self.tabview.tab("Параметры сети"), image=ipconfig_img, text="")
         self.ipconfig_label_img.grid(row=1, column=1, padx=(18, 0), pady=(30, 5), sticky="w")
         self.combobox_ipconfig = PlaceholderComboBox(self.tabview.tab("Параметры сети"), values=["/all", "/displaydns", "/showclassid *"], width=155, variable=x2, command=lambda combo_var: combo_focus(self.combobox_ipconfig), placeholder_text="Выберите из списка или введите...")
-        self.combobox_ipconfig.grid(row=1, column=1, columnspan=7, padx=(210, 0), pady=(30, 5), sticky="nsew")
+        self.combobox_ipconfig.grid(row=1, column=1, columnspan=7, padx=(205, 0), pady=(30, 5), sticky="nsew")
         self.combobox_ipconfig.bind("<Return>", lambda combobox_ipconfig: execute_cmd2("ipconfig " + str(x2.get())))
         self.combobox_ipconfig.bind("<Down>", lambda open_var: self.combobox_ipconfig._clicked())
         self.combobox_ipconfig.bind("<Delete>", lambda del_var: clear_entry(self.combobox_ipconfig))
@@ -2910,7 +2990,7 @@ class App(ctk.CTk):
         self.combobox_ipconfig.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: self.close_app()), self.after(50, lambda: self.bind("<Down>", lambda next: self.textbox2.yview_scroll(1, "units"))), self.after(50, lambda: self.bind("<Up>", lambda next: self.textbox2.yview_scroll(-1, "units")))] if self.tabview.get() == "Параметры сети" else print("sss"))
 
         self.button_ipconfig = ctk.CTkButtonSoftHover(master=self.tabview.tab("Параметры сети"), normal_color="#1F538D", fg_color="#1F538D", hover=False, border_width=0, text_color=("white", "#DCE4EE"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="bold"), text="Показать", command=lambda: execute_cmd2("ipconfig " + str(x2.get())))
-        self.button_ipconfig.grid(row=1, column=8, padx=(20, 10), pady=(30, 5), sticky="nsew")
+        self.button_ipconfig.grid(row=1, column=8, padx=(10, 10), pady=(30, 5), sticky="nsew")
         self.button_ipconfig.bind("<Enter>", lambda go_hover: [self.anim_hover.animate_hover(self.button_ipconfig, int("1f538d", 16), int("0f334d", 16), int("10204", 16), 10, "down")])  # print("IN")
         self.button_ipconfig._text_label.bind("<Enter>", lambda var_in: self.anim_hover.stop_leave(self.button_ipconfig))
         self.button_ipconfig._text_label.bind("<Leave>", lambda var_out: self.anim_hover.go_leave(self.button_ipconfig, "1f538d", "0f334d", "10204"))
@@ -2928,7 +3008,7 @@ class App(ctk.CTk):
         self.adapter_label_img = ctk.CTkLabel(self.tabview.tab("Параметры сети"), image=adapter_img, text="")
         self.adapter_label_img.grid(row=2, column=1, padx=(18, 0), pady=(10, 10), sticky="w")
         self.combobox_2 = PlaceholderComboBox(self.tabview.tab("Параметры сети"), variable=x4, width=285, command=lambda combo_var: combo_focus(self.combobox_2), placeholder_text="Выберите из списка или введите...")
-        self.combobox_2.grid(row=2, column=1, columnspan=7, padx=(210, 0), pady=(10, 10), sticky="nsew")
+        self.combobox_2.grid(row=2, column=1, columnspan=7, padx=(205, 0), pady=(10, 10), sticky="nsew")
         self.combobox_2.bind("<Return>", lambda combobox_2_var: execute_cmd3('netsh interface ipv4 show config name="' + str(x4.get()) + '"'))
         self.combobox_2.bind("<Down>", lambda open_var: get_adapters_list(self.combobox_2))
         self.combobox_2.bind("<Delete>", lambda del_var: clear_entry(self.combobox_2))
@@ -2937,7 +3017,7 @@ class App(ctk.CTk):
         self.combobox_2.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: self.close_app()), self.after(50, lambda: self.bind("<Down>", lambda next: self.textbox2.yview_scroll(1, "units"))), self.after(50, lambda: self.bind("<Up>", lambda next: self.textbox2.yview_scroll(-1, "units")))] if self.tabview.get() == "Параметры сети" else print("sss"))
 
         self.main_button_4 = ctk.CTkButtonSoftHover(master=self.tabview.tab("Параметры сети"), normal_color="#1F538D", fg_color="#1F538D", hover=False, border_width=0, text_color=("white", "#DCE4EE"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="bold"), text="Показать", command=lambda: execute_cmd3('netsh interface ipv4 show config name="' + str(x4.get()) + '"'))
-        self.main_button_4.grid(row=2, column=8, padx=(20, 10), pady=(10, 10), sticky="nsew")
+        self.main_button_4.grid(row=2, column=8, padx=(10, 10), pady=(10, 10), sticky="nsew")
         self.main_button_4.bind("<Enter>", lambda go_hover: [self.anim_hover.animate_hover(self.main_button_4, int("1f538d", 16), int("0f334d", 16), int("10204", 16), 10, "down")])  # print("IN")
         self.main_button_4._text_label.bind("<Enter>", lambda var_in: self.anim_hover.stop_leave(self.main_button_4))
         self.main_button_4._text_label.bind("<Leave>", lambda var_out: self.anim_hover.go_leave(self.main_button_4, "1f538d", "0f334d", "10204"))
@@ -2956,9 +3036,9 @@ class App(ctk.CTk):
         self.label_con2 = ctk.CTkLabel(self.tabview.tab("Параметры сети"), text="", image=consolelog_img, height=19)
         self.label_con2.grid(row=4, column=3, padx=(0, 0), pady=(0, 3), sticky="sw")
         self.help_btn_tab2 = ctk.CTkButtonSoftHover(master=self.tabview.tab("Параметры сети"), width=20, hover=False, text_color="gray32", border_width=0, image=help_img, text="", font=ctk.CTkFont(size=11, weight="bold"), command=lambda: help(self.tabview.get()))
-        self.help_btn_tab2.grid(row=4, column=8, padx=(0, 0), pady=(20, 0), sticky="e")
+        self.help_btn_tab2.grid(row=4, column=8, padx=(0, 3), pady=(20, 0), sticky="e")
         self.clear_btn2 = ctk.CTkButtonSoftHover(master=self.tabview.tab("Параметры сети"), width=20, hover=False, image=cleartext_img, border_width=0, text="", command=lambda: clear_text(self.textbox2))
-        self.clear_btn2.grid(row=4, column=9, padx=(0, 20), pady=(20, 0), sticky="e")
+        self.clear_btn2.grid(row=4, column=9, padx=(0, 20), pady=(20, 0), sticky="nsew")
         self.textbox2 = ctk.CTkTextbox(self.tabview.tab("Параметры сети"), width=1100, state="disabled")
         self.textbox2.grid(row=4, rowspan=8, column=3, columnspan=8, padx=(0, 20), pady=(55, 19), sticky="nsew")
 
@@ -2972,7 +3052,7 @@ class App(ctk.CTk):
         self.combobox_3 = ctk.CTkComboBox(self.tabview.tab("Параметры сети"), width=137, variable=x8, command=lambda combo_var: combo_focus(self.combobox_3))
         self.combobox_3.grid(row=5, column=1, padx=(80, 0), pady=(10, 20), sticky="nsew")
         self.combobox_3.bind("<Down>", lambda open_var: get_adapters_list(self.combobox_3))
-        self.combobox_3.bind("<Return>", lambda entry7_var: execute_cmd4('netsh interface ipv4 set address name="' + str(x8.get()) + '"' + " static " + str(x5.get()) + " " + str(x6.get()) + " " + str(x7.get())))
+        self.combobox_3.bind("<Return>", lambda entry7_var: execute_cmd4('netsh interface ipv4 set address name="' + str(x8.get()) + '"' + " static " + str(self.x5.get()) + " " + str(self.x6.get()) + " " + str(self.x7.get())))
         self.combobox_3.bind("<Delete>", lambda del_var: clear_entry(self.combobox_3))
         self.combobox_3._canvas.bind("<Enter>", lambda ada: get_adapters_list_click(self.combobox_3))  # Для обновления списка именно перед кликом (грязно-грязно)
         self.combobox_3.bind("<FocusIn>", lambda focus_on: self.after(100, lambda: [self.unbind("<Down>"), self.unbind("<Up>"), self.bind('<Escape>', lambda escape_entry: right_click())]))
@@ -2987,13 +3067,15 @@ class App(ctk.CTk):
 
         self.label6 = ctk.CTkLabel(self.tabview.tab("Параметры сети"), text="IP-адр:", font=ctk.CTkFont(family="Trebuchet MS", size=15, weight="bold"))
         self.label6.grid(row=6, column=1, padx=(20, 10), pady=(0, 20), sticky="w")
-        self.entry6 = ctk.CTkEntry(self.tabview.tab("Параметры сети"), textvariable=x5, font=ctk.CTkFont(family="Trebuchet MS", size=13, weight="bold"))
+        self.entry6 = ctk.CTkEntry(self.tabview.tab("Параметры сети"), textvariable=self.x5, font=ctk.CTkFont(family="Trebuchet MS", size=13, weight="bold"))
         self.entry6.grid(row=6, column=1, padx=(80, 0), pady=(0, 20), sticky="nsew")
-        self.entry6.bind("<Return>", lambda entry6_var: execute_cmd4('netsh interface ipv4 set address name="' + str(x8.get()) + '"' + " static " + str(x5.get()) + " " + str(x6.get()) + " " + str(x7.get())))
+        self.entry6.bind("<Return>", lambda entry6_var: execute_cmd4('netsh interface ipv4 set address name="' + str(x8.get()) + '"' + " static " + str(self.x5.get()) + " " + str(self.x6.get()) + " " + str(self.x7.get())))
         self.entry6.bind("<Button-1>", lambda into_entry: left_click(self.entry6))
         self.entry6.bind("<Delete>", lambda del_var: clear_entry(self.entry6))
         self.entry6.bind("<FocusIn>", lambda focus_on: self.after(100, lambda: [self.unbind("<Down>"), self.unbind("<Up>"), self.bind('<Escape>', lambda escape_entry: right_click())]))
         self.entry6.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: self.close_app()), self.after(50, lambda: self.bind("<Down>", lambda next: self.textbox2.yview_scroll(1, "units"))), self.after(50, lambda: self.bind("<Up>", lambda next: self.textbox2.yview_scroll(-1, "units")))] if self.tabview.get() == "Параметры сети" else print("sss"))
+        self.entry6.bind('<Control-KeyPress>', lambda event, entry_name="ip": key_control_v(event, entry_name))
+        self.entry6.bind('<KeyPress>', key_backspace)
 
         self.clear_btn_ips = ctk.CTkButtonSoftHover(master=self.tabview.tab("Параметры сети"), width=20, normal_color="#f4740b", fg_color="#f4740b", hover=False, border_width=0, image=clear_img, text="", command=lambda: [clear_entry(self.entry6), self.after(150, lambda: self.anim_hover.animate_hover(self.clear_btn_ips, int("f4740b", 16), int("94440B", 16), int("60300", 16), 10, "down"))])
         self.clear_btn_ips.grid(row=6, column=2, padx=(10, 20), pady=(0, 20), sticky="w")
@@ -3002,19 +3084,21 @@ class App(ctk.CTk):
         self.clear_btn_ips._image_label.bind("<Leave>", lambda var_out: self.anim_hover.go_leave(self.clear_btn_ips, "f4740b", "94440B", "60300"))
         self.anim_hover.init_hover_state(self.clear_btn_ips)
 
-        ip_entry_string_last_valid3 = [u"..."]
-        x5.trace("w", lambda *args: entry_mask_check(x5, ip_entry_string_last_valid3, self.entry6))
-        x5.set("")
+        self.ip_entry_string_last_valid3 = [u"..."]
+        self.x5.trace("w", lambda *args: entry_mask_check(self.x5, self.ip_entry_string_last_valid3, self.entry6))
+        self.x5.set("")
 
         self.label7 = ctk.CTkLabel(self.tabview.tab("Параметры сети"), text="Маска:", font=ctk.CTkFont(family="Trebuchet MS", size=15, weight="bold"))
         self.label7.grid(row=7, column=1, padx=(20, 10), pady=(0, 20), sticky="w")
-        self.entry7 = ctk.CTkEntry(self.tabview.tab("Параметры сети"), textvariable=x6, font=ctk.CTkFont(family="Trebuchet MS", size=13, weight="bold"))
+        self.entry7 = ctk.CTkEntry(self.tabview.tab("Параметры сети"), textvariable=self.x6, font=ctk.CTkFont(family="Trebuchet MS", size=13, weight="bold"))
         self.entry7.grid(row=7, column=1, padx=(80, 0), pady=(0, 20), sticky="nsew")
-        self.entry7.bind("<Return>", lambda entry7_var: execute_cmd4('netsh interface ipv4 set address name="' + str(x8.get()) + '"' + " static " + str(x5.get()) + " " + str(x6.get()) + " " + str(x7.get())))
+        self.entry7.bind("<Return>", lambda entry7_var: execute_cmd4('netsh interface ipv4 set address name="' + str(x8.get()) + '"' + " static " + str(self.x5.get()) + " " + str(self.x6.get()) + " " + str(self.x7.get())))
         self.entry7.bind("<Button-1>", lambda into_entry: left_click(self.entry7))
         self.entry7.bind("<Delete>", lambda del_var: clear_entry(self.entry7))
         self.entry7.bind("<FocusIn>", lambda focus_on: self.after(100, lambda: [self.unbind("<Down>"), self.unbind("<Up>"), self.bind('<Escape>', lambda escape_entry: right_click())]))
         self.entry7.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: self.close_app()), self.after(50, lambda: self.bind("<Down>", lambda next: self.textbox2.yview_scroll(1, "units"))), self.after(50, lambda: self.bind("<Up>", lambda next: self.textbox2.yview_scroll(-1, "units")))] if self.tabview.get() == "Параметры сети" else print("sss"))
+        self.entry7.bind('<Control-KeyPress>', lambda event, entry_name="mask": key_control_v(event, entry_name))
+        self.entry7.bind('<KeyPress>', key_backspace)
 
         self.clear_btn_mask = ctk.CTkButtonSoftHover(master=self.tabview.tab("Параметры сети"), width=20, normal_color="#f4740b", fg_color="#f4740b", hover=False, border_width=0, image=clear_img, text="", command=lambda: [clear_entry(self.entry7), self.after(150, lambda: self.anim_hover.animate_hover(self.clear_btn_mask, int("f4740b", 16), int("94440B", 16), int("60300", 16), 10, "down"))])
         self.clear_btn_mask.grid(row=7, column=2, padx=(10, 20), pady=(0, 20), sticky="w")
@@ -3023,19 +3107,21 @@ class App(ctk.CTk):
         self.clear_btn_mask._image_label.bind("<Leave>", lambda var_out: self.anim_hover.go_leave(self.clear_btn_mask, "f4740b", "94440B", "60300"))
         self.anim_hover.init_hover_state(self.clear_btn_mask)
 
-        ip_entry_string_last_valid4 = [u"..."]
-        x6.trace("w", lambda *args: entry_mask_check(x6, ip_entry_string_last_valid4, self.entry7))
-        x6.set("")
+        self.ip_entry_string_last_valid4 = [u"..."]
+        self.x6.trace("w", lambda *args: entry_mask_check(self.x6, self.ip_entry_string_last_valid4, self.entry7))
+        self.x6.set("")
 
         self.label8_1 = ctk.CTkLabel(self.tabview.tab("Параметры сети"), text="Шлюз:", font=ctk.CTkFont(family="Trebuchet MS", size=15, weight="bold"))
         self.label8_1.grid(row=8, column=1, padx=(20, 0), pady=(0, 20), sticky="w")
-        self.entry8 = ctk.CTkEntry(self.tabview.tab("Параметры сети"), textvariable=x7, font=ctk.CTkFont(family="Trebuchet MS", size=13, weight="bold"))
+        self.entry8 = ctk.CTkEntry(self.tabview.tab("Параметры сети"), textvariable=self.x7, font=ctk.CTkFont(family="Trebuchet MS", size=13, weight="bold"))
         self.entry8.grid(row=8, column=1, padx=(80, 0), pady=(0, 20), sticky="nsew")
-        self.entry8.bind("<Return>", lambda entry8_var: execute_cmd4('netsh interface ipv4 set address name="' + str(x8.get()) + '"' + " static " + str(x5.get()) + " " + str(x6.get()) + " " + str(x7.get())))
+        self.entry8.bind("<Return>", lambda entry8_var: execute_cmd4('netsh interface ipv4 set address name="' + str(x8.get()) + '"' + " static " + str(self.x5.get()) + " " + str(self.x6.get()) + " " + str(self.x7.get())))
         self.entry8.bind("<Button-1>", lambda into_entry: left_click(self.entry8))
         self.entry8.bind("<Delete>", lambda del_var: clear_entry(self.entry8))
         self.entry8.bind("<FocusIn>", lambda focus_on: self.after(100, lambda: [self.unbind("<Down>"), self.unbind("<Up>"), self.bind('<Escape>', lambda escape_entry: right_click())]))
         self.entry8.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: self.close_app()), self.after(50, lambda: self.bind("<Down>", lambda next: self.textbox2.yview_scroll(1, "units"))), self.after(50, lambda: self.bind("<Up>", lambda next: self.textbox2.yview_scroll(-1, "units")))] if self.tabview.get() == "Параметры сети" else print("sss"))
+        self.entry8.bind('<Control-KeyPress>', lambda event, entry_name="gate": key_control_v(event, entry_name))
+        self.entry8.bind('<KeyPress>', key_backspace)
 
         self.clear_btn_gate = ctk.CTkButtonSoftHover(master=self.tabview.tab("Параметры сети"), width=20, normal_color="#f4740b", fg_color="#f4740b", hover=False, border_width=0, image=clear_img, text="", command=lambda: [clear_entry(self.entry8), self.after(150, lambda: self.anim_hover.animate_hover(self.clear_btn_gate, int("f4740b", 16), int("94440B", 16), int("60300", 16), 10, "down"))])
         self.clear_btn_gate.grid(row=8, column=2, padx=(10, 20), pady=(0, 20), sticky="w")
@@ -3044,11 +3130,11 @@ class App(ctk.CTk):
         self.clear_btn_gate._image_label.bind("<Leave>", lambda var_out: self.anim_hover.go_leave(self.clear_btn_gate, "f4740b", "94440B", "60300"))
         self.anim_hover.init_hover_state(self.clear_btn_gate)
 
-        ip_entry_string_last_valid5 = [u"..."]
-        x7.trace("w", lambda *args: entry_mask_check(x7, ip_entry_string_last_valid5, self.entry8))
-        x7.set("")
+        self.ip_entry_string_last_valid5 = [u"..."]
+        self.x7.trace("w", lambda *args: entry_mask_check(self.x7, self.ip_entry_string_last_valid5, self.entry8))
+        self.x7.set("")
 
-        self.main_button_5 = ctk.CTkButtonSoftHover(master=self.tabview.tab("Параметры сети"), normal_color="#1F538D", fg_color="#1F538D", hover=False, border_width=0, text_color=("white", "#DCE4EE"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="bold"), text="Применить", command=lambda: execute_cmd4('netsh interface ipv4 set address name="' + str(x8.get()) + '"' + " static " + str(x5.get()) + " " + str(x6.get()) + " " + str(x7.get())))
+        self.main_button_5 = ctk.CTkButtonSoftHover(master=self.tabview.tab("Параметры сети"), normal_color="#1F538D", fg_color="#1F538D", hover=False, border_width=0, text_color=("white", "#DCE4EE"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="bold"), text="Применить", command=lambda: execute_cmd4('netsh interface ipv4 set address name="' + str(x8.get()) + '"' + " static " + str(self.x5.get()) + " " + str(self.x6.get()) + " " + str(self.x7.get())))
         self.main_button_5.grid(row=9, column=1, columnspan=2, padx=(20, 20), pady=(0, 15), ipady=4, sticky="nsew")
         self.main_button_5.bind("<Enter>", lambda go_hover: [self.anim_hover.animate_hover(self.main_button_5, int("1f538d", 16), int("0f334d", 16), int("10204", 16), 10, "down")])  # print("IN")
         self.main_button_5._text_label.bind("<Enter>", lambda var_in: self.anim_hover.stop_leave(self.main_button_5))
@@ -3087,7 +3173,7 @@ class App(ctk.CTk):
         self.combobox_4.bind("<FocusOut>", lambda focus_out: [self.bind('<Escape>', lambda close: self.close_app())])
 
         self.main_button_6 = ctk.CTkButtonSoftHover(master=self.tabview.tab("База адресов"), normal_color="#1F538D", fg_color="#1F538D", is_disabled=True, hover=False, border_width=0, text_color=("white", "#DCE4EE"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="bold"), text="Соединить", command=lambda: show_db(name_db, self.listbox))
-        self.main_button_6.grid(row=1, column=4, padx=(20, 10), pady=(30, 20), sticky="nsew")
+        self.main_button_6.grid(row=1, column=4, padx=(10, 10), pady=(30, 20), sticky="nsew")
         self.main_button_6.bind("<Enter>", lambda go_hover: [self.anim_hover.animate_hover(self.main_button_6, int("1f538d", 16), int("0f334d", 16), int("10204", 16), 10, "down")])  # print("IN")
         self.main_button_6._text_label.bind("<Enter>", lambda var_in: self.anim_hover.stop_leave(self.main_button_6))
         self.main_button_6._text_label.bind("<Leave>", lambda var_out: self.anim_hover.go_leave(self.main_button_6, "1f538d", "0f334d", "10204"))
@@ -3103,13 +3189,12 @@ class App(ctk.CTk):
         self.label_con3 = ctk.CTkLabel(self.tabview.tab("База адресов"), text="", image=show_bd_img)
         self.label_con3.grid(row=2, column=2, padx=(12, 0), pady=(0, 5), sticky="w")
         self.help_btn_tab3 = ctk.CTkButtonSoftHover(master=self.tabview.tab("База адресов"), width=20, hover=False, border_width=0, image=help_img, text="", command=lambda: help(self.tabview.get()))
-        self.help_btn_tab3.grid(row=2, column=4, padx=(0, 0), pady=(0, 5), sticky="e")
-        self.clear_btn3 = ctk.CTkButtonSoftHover(master=self.tabview.tab("База адресов"), width=20, hover=False, image=cleartext_img, border_width=0, text="", command=lambda: [clear_text(self.listbox), clear_count()])
-        self.clear_btn3.grid(row=2, column=5, padx=(0, 20), pady=(0, 5), sticky="e")
+        self.help_btn_tab3.grid(row=2, column=4, padx=(0, 3), pady=(0, 5), sticky="e")
+        self.clear_btn3 = ctk.CTkButtonSoftHover(master=self.tabview.tab("База адресов"), width=20, hover=False, image=self.more_img, border_width=0, text="", command=self.toggle_listbox)
+        self.clear_btn3.grid(row=2, column=5, padx=(0, 20), pady=(0, 5), sticky="nsew")
 
         self.previous_selected = None
         self.listbox = CTkListbox(self.tabview.tab("База адресов"), fg_color=("white", "#333333"), border_width=0, button_color=("#e5e5e5", "#212121"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="normal"), orientation="vertical", orientation2="horizontal", width=560)
-        self.listbox.grid(row=3, rowspan=6, column=2, columnspan=4, padx=(12, 20), pady=(0, 0), sticky="nsew")
         self.listbox.bind('<<ListboxSelect>>', lambda list_var: open_con_listbox())
         self.after(200, lambda: self.listbox.bind('<Enter>', lambda list_var2: outcolor_for_listbox()))
         self.bind('<ButtonPress-1>', self.deselect_item)
@@ -3118,38 +3203,38 @@ class App(ctk.CTk):
         self.textbox3 = ctk.CTkTextbox(self.tabview.tab("База адресов"), width=50, height=20, border_width=2, font=ctk.CTkFont(family=("Trebuchet MS"), size=11, weight="bold"), state="disabled", border_color=("#8f8f8f", "#444444"))
         self.textbox3.grid(row=3, column=1, padx=(95, 19), pady=(0, 0), sticky="ew")
         self.label9 = ctk.CTkLabel(self.tabview.tab("База адресов"), text="Записей:", font=ctk.CTkFont(family="Trebuchet MS", size=14, weight="bold"))
-        self.label9.grid(row=3, column=1, padx=(23, 0), pady=(0, 0), sticky="w")
+        self.label9.grid(row=3, column=1, padx=(25, 0), pady=(0, 0), sticky="w")
 
         self.con_button = ctk.CTkButtonSoftHover(master=self.tabview.tab("База адресов"), normal_color="#1F538D", fg_color="#1F538D", hover=False, border_width=0, text_color=("white", "#DCE4EE"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="bold"), text="Открыть", command=selected_item)
-        self.con_button.grid(row=4, column=1, padx=(23, 0), pady=(0, 0), sticky="w")
+        self.con_button.grid(row=4, column=1, padx=(25, 0), pady=(0, 0), sticky="w")
         self.con_button.bind("<Enter>", lambda go_hover: [self.anim_hover.animate_hover(self.con_button, int("1f538d", 16), int("0f334d", 16), int("10204", 16), 10, "down")])  # print("IN")
         self.con_button._text_label.bind("<Enter>", lambda var_in: self.anim_hover.stop_leave(self.con_button))
         self.con_button._text_label.bind("<Leave>", lambda var_out: self.anim_hover.go_leave(self.con_button, "1f538d", "0f334d", "10204"))
         self.anim_hover.init_hover_state(self.con_button)
 
         self.update_button = ctk.CTkButtonSoftHover(master=self.tabview.tab("База адресов"), normal_color="#1F538D", fg_color="#1F538D", hover=False, is_disabled=True, border_width=0, text_color=("white", "#DCE4EE"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="bold"), text="Обновить", command=lambda: [refresh_db(name_db, self.listbox)])
-        self.update_button.grid(row=5, column=1, padx=(23, 0), pady=(0, 0), sticky="w")
+        self.update_button.grid(row=5, column=1, padx=(25, 0), pady=(0, 0), sticky="w")
         self.update_button.bind("<Enter>", lambda go_hover: [self.anim_hover.animate_hover(self.update_button, int("1f538d", 16), int("0f334d", 16), int("10204", 16), 10, "down")])  # print("IN")
         self.update_button._text_label.bind("<Enter>", lambda var_in: self.anim_hover.stop_leave(self.update_button))
         self.update_button._text_label.bind("<Leave>", lambda var_out: self.anim_hover.go_leave(self.update_button, "1f538d", "0f334d", "10204"))
         self.anim_hover.init_hover_state(self.update_button)
 
         self.add_button = ctk.CTkButtonSoftHover(master=self.tabview.tab("База адресов"), normal_color="#1F538D", fg_color="#1F538D", hover=False, border_width=0, text_color=("white", "#DCE4EE"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="bold"), text="Добавить", command=lambda: [add_item(name_db, self.listbox)])
-        self.add_button.grid(row=6, column=1, padx=(23, 0), pady=(0, 0), sticky="w")
+        self.add_button.grid(row=6, column=1, padx=(25, 0), pady=(0, 0), sticky="w")
         self.add_button.bind("<Enter>", lambda go_hover: [self.anim_hover.animate_hover(self.add_button, int("1f538d", 16), int("0f334d", 16), int("10204", 16), 10, "down")])  # print("IN")
         self.add_button._text_label.bind("<Enter>", lambda var_in: self.anim_hover.stop_leave(self.add_button))
         self.add_button._text_label.bind("<Leave>", lambda var_out: self.anim_hover.go_leave(self.add_button, "1f538d", "0f334d", "10204"))
         self.anim_hover.init_hover_state(self.add_button)
 
         self.update_row_button = ctk.CTkButtonSoftHover(master=self.tabview.tab("База адресов"), normal_color="#1F538D", fg_color="#1F538D", hover=False, border_width=0, text_color=("white", "#DCE4EE"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="bold"), text="Изменить", command=lambda: [update_item(name_db, self.listbox)])
-        self.update_row_button.grid(row=7, column=1, padx=(23, 0), pady=(0, 0), sticky="w")
+        self.update_row_button.grid(row=7, column=1, padx=(25, 0), pady=(0, 0), sticky="w")
         self.update_row_button.bind("<Enter>", lambda go_hover: [self.anim_hover.animate_hover(self.update_row_button, int("1f538d", 16), int("0f334d", 16), int("10204", 16), 10, "down")])  # print("IN")
         self.update_row_button._text_label.bind("<Enter>", lambda var_in: self.anim_hover.stop_leave(self.update_row_button))
         self.update_row_button._text_label.bind("<Leave>", lambda var_out: self.anim_hover.go_leave(self.update_row_button, "1f538d", "0f334d", "10204"))
         self.anim_hover.init_hover_state(self.update_row_button)
 
         self.del_button = ctk.CTkButtonSoftHover(master=self.tabview.tab("База адресов"), normal_color="#f4740b", fg_color="#f4740b", hover=False, border_width=0, text_color=("white", "#DCE4EE"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="bold"), text="Удалить", command=lambda: delete_item(name_db, self.listbox))
-        self.del_button.grid(row=8, column=1, padx=(23, 0), pady=(0, 0), sticky="w")
+        self.del_button.grid(row=8, column=1, padx=(25, 0), pady=(0, 0), sticky="w")
         self.del_button.bind("<Enter>", lambda go_hover: [self.anim_hover.animate_hover(self.del_button, int("f4740b", 16), int("94440B", 16), int("60300", 16), 10, "down")])
         self.del_button._text_label.bind("<Enter>", lambda var_in: self.anim_hover.stop_leave(self.del_button))
         self.del_button._text_label.bind("<Leave>", lambda var_out: self.anim_hover.go_leave(self.del_button, "f4740b", "94440B", "60300"))
@@ -3175,7 +3260,7 @@ class App(ctk.CTk):
         clear_disabled_img = ctk.CTkImage(dark_image=Image.open(path_img + "img/clear_dis.png"), size=(20, 20))
 
         self.search_button = ctk.CTkButtonSoftHover(master=self.tabview.tab("База адресов"), normal_color="#1F538D", fg_color="#1F538D", hover=False, is_disabled=True, border_width=0, text_color=("white", "#DCE4EE"), font=ctk.CTkFont(family=("Trebuchet MS"), size=14, weight="bold"), text="Найти", command=lambda: search_item(name_db, self.listbox, self.combobox_5.get()))
-        self.search_button.grid(row=10, column=4, padx=(20, 10), pady=(0, 20), sticky="ew")
+        self.search_button.grid(row=10, column=4, padx=(10, 10), pady=(0, 20), sticky="ew")
         self.search_button.bind("<Enter>", lambda go_hover: [self.anim_hover.animate_hover(self.search_button, int("1f538d", 16), int("0f334d", 16), int("10204", 16), 10, "down")])  # print("IN")
         self.search_button._text_label.bind("<Enter>", lambda var_in: self.anim_hover.stop_leave(self.search_button))
         self.search_button._text_label.bind("<Leave>", lambda var_out: self.anim_hover.go_leave(self.search_button, "1f538d", "0f334d", "10204"))
@@ -3221,12 +3306,17 @@ class App(ctk.CTk):
         self.scaling_optionemenu.bind('<Button-1>', lambda antibag228: antibug())
         # self.search_button.bind('<Button-1>', lambda antibag: antibug()) # Ну тут пока спорно, могут быть баги но это не точно!
 
+        self.listbox_hidden = False
+
         change_language(self.language_optionemenu.get(), theme, opacity, alerts)
         change_transparency_mode(self.transparancy_mode_optionemenu.get())
         change_appearance_mode(self.appearance_mode_optionemenu.get())
         change_scaling_event(self.scaling_optionemenu.get())
+
+
         self.settings_toggle_button.grid(row=7, column=0, sticky="nsew", padx=25, pady=(0, 26))
         self.bind("<F10>", lambda open_settings_menu: self.toggle_settings_frame())
+        self.bind("<F11>", lambda open_listbox: self.toggle_listbox())
 
         threading.Thread(target=self.run_update_open_ssh, daemon=True).start()
 
@@ -3423,6 +3513,124 @@ class App(ctk.CTk):
             self.hide_widgets()
             self.animate_padding(self.settings_frame, self.settings_frame_height, 0, 1.5, 1, "die")
 
+    # Оптимизация удаления (для более быстрой работы с базой, заебала эта красота, слишком медленно было)
+    def delete_items_in_batches(self, listbox, indices, batch_size):
+        """Удаляет элементы из Listbox партиями."""
+        for i in range(0, len(indices), batch_size):
+            batch = indices[i:i + batch_size]
+            for index in sorted(batch, reverse=True):  # Удаляем в обратном порядке, чтобы избежать смещения индексов
+                listbox.delete(index)
+        self.listbox._parent_canvas.yview("moveto", 0)
+
+    # Функция раскрытия и сжатия листбокса БД
+    def toggle_listbox(self):
+        if self.appearance_mode_optionemenu.get() == "Темная" or self.appearance_mode_optionemenu.get() == "Dark":
+            self.anim_hover.check_color(self.clear_btn3, "212121", "333333", "10101", upper=True)
+        else:
+            self.anim_hover.check_color(self.clear_btn3, "e5e5e5", "ffffff", "20202", upper=True)
+        if self.listbox_hidden:
+            self.listbox_hidden = False
+            try:
+                self.delete_items_in_batches(self.listbox, list(range(self.listbox.size())), self.listbox.size())
+            except:
+                self.delete_items_in_batches(self.listbox, list(range(self.listbox.size())), 1000)
+            self.back_widgets_baza()
+            self.after(50, lambda: self.insert_with_preview_async(self.list2))
+        else:
+            self.listbox_hidden = True
+            try:
+                self.delete_items_in_batches(self.listbox, list(range(self.listbox.size())), self.listbox.size())
+            except:
+                self.delete_items_in_batches(self.listbox, list(range(self.listbox.size())), 1000)
+            self.hide_widgets_baza()
+            self.after(50, lambda: self.insert_with_preview_async(self.list2))
+
+    def hide_widgets_baza(self):
+        self.clear_btn3.configure(image=self.less_img)
+        self.tabview.tab("База адресов").grid_columnconfigure((1, 2), weight=0)
+        self.tabview.tab("База адресов").grid_columnconfigure((3, 4, 5, 6, 7), weight=1)
+        self.tabview.tab("База адресов").grid_rowconfigure((3, 4, 5, 6, 7, 8), weight=1)
+        self.baza_label_img.grid_forget()
+        self.label8.grid_forget()
+        self.combobox_4.grid_forget()
+        self.main_button_6.grid_forget()
+        self.clear_btn_baza.grid_forget()
+        self.label_con3.grid_forget()
+        self.help_btn_tab3.grid_forget()
+        self.clear_btn3.grid_forget()
+        self.listbox.grid_forget()
+        self.textbox3.grid_forget()
+        self.label9.grid_forget()
+        self.con_button.grid_forget()
+        self.update_button.grid_forget()
+        self.add_button.grid_forget()
+        self.update_row_button.grid_forget()
+        self.del_button.grid_forget()
+        self.label_line3.grid_forget()
+        self.label10.grid_forget()
+        self.combobox_5.grid_forget()
+        self.search_button.grid_forget()
+        self.clear_btn_search.grid_forget()
+        self.search_label_img.grid_forget()
+        self.label_con3.grid(row=1, column=1, columnspan=2, padx=(20, 0), pady=(10, 5), sticky="w")
+        if self.scaling_optionemenu.get() == "95%":
+            self.listbox.configure(width=790)
+            self.help_btn_tab3.grid(row=1, column=7, padx=(0, 60), pady=(10, 5), sticky="e")
+            self.clear_btn3.grid(row=1, column=7, padx=(96, 20), pady=(10, 5), sticky="nsew")
+        elif self.scaling_optionemenu.get() == "105%":
+            self.listbox.configure(width=685)
+            self.help_btn_tab3.grid(row=1, column=7, padx=(0, 57), pady=(10, 5), sticky="e")
+            self.clear_btn3.grid(row=1, column=7, padx=(76, 20), pady=(10, 5), sticky="nsew")
+        else:
+            self.listbox.configure(width=735)
+            self.help_btn_tab3.grid(row=1, column=7, padx=(0, 60), pady=(10, 5), sticky="e")
+            self.clear_btn3.grid(row=1, column=7, padx=(85, 20), pady=(10, 5), sticky="nsew")
+        self.listbox.grid(row=2, rowspan=8, column=1, columnspan=7, padx=(20, 20), pady=(0, 20), sticky="nsew")
+        self.label9.grid(row=10, column=1, padx=(20, 10), pady=(5, 20), sticky="w")
+        self.textbox3.configure(height=5, width=70)
+        self.textbox3.grid(row=10, column=2, padx=(0, 0), pady=(5, 20), sticky="ew")
+        self.con_button.grid(row=10, column=3, padx=(20, 0), pady=(5, 20), sticky="ew")
+        self.update_button.grid(row=10, column=4, padx=(10, 0), pady=(5, 20), sticky="ew")
+        self.add_button.grid(row=10, column=5, padx=(10, 0), pady=(5, 20), sticky="ew")
+        self.update_row_button.grid(row=10, column=6, padx=(10, 0), pady=(5, 20), sticky="ew")
+        self.del_button.grid(row=10, column=7, padx=(10, 20), pady=(5, 20), sticky="ew")
+
+    def back_widgets_baza(self):
+        self.clear_btn3.configure(image=self.more_img)
+        self.baza_label_img.grid(row=1, column=1, padx=(18, 0), pady=(30, 20), sticky="w")
+        self.label8.grid(row=1, column=1, padx=(50, 0), pady=(30, 20), sticky="w")
+        self.combobox_4.grid(row=1, column=2, columnspan=2, padx=(12, 0), pady=(30, 20), sticky="nsew")
+        self.main_button_6.grid(row=1, column=4, padx=(10, 10), pady=(30, 20), sticky="nsew")
+        self.clear_btn_baza.grid(row=1, column=5, padx=(0, 20), pady=(30, 20), sticky="e")
+        self.label_con3.grid(row=2, column=2, padx=(12, 0), pady=(0, 5), sticky="w")
+        self.help_btn_tab3.grid(row=2, column=4, padx=(0, 3), pady=(0, 5), sticky="e")
+        self.clear_btn3.grid(row=2, column=5, padx=(0, 20), pady=(0, 5), sticky="nsew")
+        self.textbox3.grid(row=3, column=1, padx=(95, 19), pady=(0, 0), sticky="ew")
+        self.label9.grid(row=3, column=1, padx=(25, 0), pady=(0, 0), sticky="w")
+        self.con_button.grid(row=4, column=1, padx=(25, 0), pady=(0, 0), sticky="w")
+        self.update_button.grid(row=5, column=1, padx=(25, 0), pady=(0, 0), sticky="w")
+        self.add_button.grid(row=6, column=1, padx=(25, 0), pady=(0, 0), sticky="w")
+        self.update_row_button.grid(row=7, column=1, padx=(25, 0), pady=(0, 0), sticky="w")
+        self.del_button.grid(row=8, column=1, padx=(25, 0), pady=(0, 0), sticky="w")
+        self.label_line3.grid(row=9, column=1, columnspan=5, padx=24, pady=(15, 15))
+        self.label10.grid(row=10, column=1, padx=(50, 0), pady=(0, 20), sticky="w")
+        self.combobox_5.grid(row=10, column=2, columnspan=2, padx=(12, 0), pady=(0, 20), sticky="ew")
+        self.search_button.grid(row=10, column=4, padx=(10, 10), pady=(0, 20), sticky="ew")
+        self.clear_btn_search.grid(row=10, column=5, padx=(0, 20), pady=(0, 20), sticky="e")
+        self.search_label_img.grid(row=10, column=1, padx=(18, 0), pady=(0, 22), sticky="w")
+        self.tabview.tab("База адресов").grid_columnconfigure((3, 4, 5, 6, 7), weight=0)
+        self.tabview.tab("База адресов").grid_columnconfigure((1), weight=0)
+        self.tabview.tab("База адресов").grid_columnconfigure((2), weight=1)
+        self.tabview.tab("База адресов").grid_rowconfigure((3, 4, 6, 7, 8), weight=1)
+        self.textbox3.configure(height=20, width=50)
+        if self.scaling_optionemenu.get() == "95%":
+            self.listbox.configure(width=620)
+        elif self.scaling_optionemenu.get() == "105%":
+            self.listbox.configure(width=512)
+        else:
+            self.listbox.configure(width=560)
+        self.listbox.grid(row=3, rowspan=6, column=2, columnspan=4, padx=(12, 20), pady=(0, 0), sticky="nsew")
+
     # Снятие селекта с поля listbox при нажатии за границы поля
     def deselect_item(self, event):
         def right_click():  # ну да павторкааа ну и штоооооо (похуй+поебать+ссать сидя)
@@ -3513,9 +3721,9 @@ class App(ctk.CTk):
                    ]
             self.listbox.insert_many("end", part)
 
-    def insert_with_preview_async(self, data):
+    def insert_with_preview_async(self, data, count=12):
         # первые 20
-        for item in data[:10]:
+        for item in data[:count]:
             self.listbox.insert("end", item)
 
         rest = data[10:]
