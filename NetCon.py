@@ -1145,7 +1145,7 @@ class App(ctk.CTk):
                         if s2 in string:
                             m_index = self.list2.index(member)
                             try:
-                                listbox.move_up(m_index)
+                                listbox.move_up(m_index+2)
                                 listbox.activate(0)
                             except:
                                 listbox.activate(0)
@@ -1244,7 +1244,10 @@ class App(ctk.CTk):
                             if ss2 in string:
                                 m_index = self.list2.index(member)
                                 try:
-                                    listbox.move_up(m_index)
+                                    if m_index > 11:
+                                        listbox.move_up(m_index + 2)
+                                    else:
+                                        listbox.move_up(m_index)
                                     listbox.select(0)
                                 except:
                                     listbox.select(0)
@@ -1329,7 +1332,10 @@ class App(ctk.CTk):
                             if ss2 in string:
                                 m_index = self.list2.index(member)
                                 try:
-                                    listbox.move_up(m_index)
+                                    if m_index > 11:
+                                        listbox.move_up(m_index+2)
+                                    else:
+                                        listbox.move_up(m_index)
                                     listbox.select(0)
                                 except:
                                     listbox.select(0)
